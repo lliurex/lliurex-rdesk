@@ -1,0 +1,153 @@
+#!/bin/sh
+
+# main function
+main(){
+	[ "$1" ] || usage
+	ACTION="$1"
+	shift
+	case "$ACTION" in
+		enable)
+			root_test || die "You must be root to run this program"
+			CONN_PASS="$(gen_password)"
+			enable_connection "$CONN_PASS"
+			echo "USE PASSWORD: $CONN_PASS"
+			;;
+
+		disable)
+			root_test || die "You must be root to run this program"
+			disable_connection
+			;;
+
+		tunnel-connect)
+			[ "$1" ] die "You must specify remote USER@IP_ADDRESS"
+		        REMOTE_USER="${1%@*}"
+		        REMOTE_IP="${1#*@}"
+			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
+				die "You must specify remote USER@IP_ADDRESS"
+			fi
+			if root_test ; then
+				die "You must run this progran as NON root user"
+			fi
+			TUN_IP="$(gen_net_ip)"
+			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
+			launch_rustdesk "$TUN_IP"
+			;;
+
+		direct-connect)
+			[ "$1" ] die "You must specify remote IP_ADDRESS"
+			if root_test ; then
+				die "You must run this progran as NON root user"
+			fi
+		        REMOTE_IP="${1}"
+			launch_rustdesk "$REMOTE_IP"
+			;;
+
+		*)
+			usage
+			;;
+	esac
+
+}
+
+
+usage(){
+        die "Usage" "$(basename "$0") {enable | disable | disconnect} " \
+            "       $(basename "$0") direct-connect {REMOTE_IP}" \
+            "       $(basename "$0") tunnel-connect {USER@REMOTE_IP}"
+}
+
+die(){
+        TYPE="ERROR"
+        if [ "$#" -gt 1 ] ; then
+                TYPE="$1"
+                shift
+        fi
+        printf "${TYPE}: " >&2
+        while [ "$1" ] ; do
+                echo "$1" >&2
+                shift
+        done
+        echo "" >&2
+
+        exit 1
+}
+
+root_test(){
+	[ $(id -u) -eq 0 ] || return 1
+	return 0
+}
+
+
+gen_password(){
+	tr -dc A-Za-z0-9 </dev/urandom | head -c 8
+	echo ""
+}
+
+gen_net_address(){
+	echo "10.10.10.1/24"
+}
+
+gen_net_ip(){
+	gen_net_address |cut -f 1 -d "/"
+}
+
+create_net_alias(){
+	NET_ADDRESS="$(gen_net_address)"
+	ip a add "$NET_ADDRESS" dev lo
+}
+
+delete_net_alias(){
+	NET_ADDRESS="$(gen_net_address)"
+	ip a del "$NET_ADDRESS" dev lo
+}
+
+enable_connection(){
+	CONN_PASS="$1"
+	# configure rustdesk
+
+	# enable lan access
+	rustdesk --option direct-server Y
+
+	# disable remote server
+	rustdesk --config 'host=localhost'
+
+	# set random password
+	RND_PASS="$(gen_password)"
+	rustdesk --password "$CONN_PASS"
+
+	# configure network alias
+	create_net_alias
+}
+
+
+disable_connection(){
+	# configure rustdesk
+
+	# disable lan access
+	rustdesk --option direct-server N
+
+	# disable remote server
+	rustdesk --config 'host=localhost'
+
+	# disable password
+	rustdesk --password ''
+
+	# remove network alias
+	delete_net_alias
+}
+
+launch_rustdesk(){
+	REMOTE_IP="$1"
+	rustdesk --connect "$REMOTE_IP"
+}
+
+launch_tunnel(){
+	REMOTE_USER="$1"
+	REMOTE_IP="$2"
+        TUN_IP="$3"
+	x-terminal-emulator -e sudo sshuttle -r "${REMOTE_USER}@${REMOTE_IP}" "$TUN_IP" &
+}
+
+main "$@"
+	
+
