@@ -1,0 +1,41 @@
+#!/bin/sh
+SSHPORT=22
+enable_fw(){
+	disable_fw
+	iptables -A OUTPUT -m tcp -p tcp --dport $SSHPORT -d $REMOTEHOST -j ACCEPT
+	iptables -A OUTPUT -d $REMOTEHOST -j DROP
+}
+
+disable_fw(){
+	iptables -D OUTPUT -m tcp -p tcp --dport $SSHPORT -d $REMOTEHOST -j ACCEPT
+	iptables -D OUTPUT -d $REMOTEHOST -j DROP
+}
+
+usage(){
+	echo "Usage: $(basename "$0") [lock|unlock] {REMOTEHOST}" >&2
+	exit 1
+}
+
+# main
+[ "$1" ] || usage
+MODE="$1"
+
+[ "$2" ] || usage
+REMOTEHOST="$2"
+
+case "$1" in
+	lock)
+		enable_fw
+		echo "ENABLE ALL access to remote host: $REMOTEHOST "
+		;;
+	unlock)
+		disable_fw
+		echo "DISABLE ALL access (but SSH) to remote host: $REMOTEHOST "
+		;;
+	*)
+		usage
+		;;
+esac
+
+exit 0
+
