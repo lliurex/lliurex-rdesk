@@ -18,23 +18,24 @@ main(){
 			disable_connection
 			;;
 
-		tunnel-connect)
-			[ "$1" ] die "You must specify remote USER@IP_ADDRESS"
-		        REMOTE_USER="${1%@*}"
-		        REMOTE_IP="${1#*@}"
+		create-tunnel)
+			root_test || die "You must be root to run this program"
+	        	REMOTE_USER=""
+		        REMOTE_IP=""
+			if [ "$1" ] && echo "$1" |grep -q '@' ; then
+		        	REMOTE_USER="${1%@*}"
+			        REMOTE_IP="${1#*@}"
+			fi
 			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
-			if root_test ; then
-				die "You must run this progran as NON root user"
-			fi
 			TUN_IP="$(gen_net_ip)"
+			echo "run $0 connect $TUN_IP to access remote host"
 			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
-			launch_rustdesk "$TUN_IP"
 			;;
 
-		direct-connect)
-			[ "$1" ] die "You must specify remote IP_ADDRESS"
+		connect)
+			[ "$1" ] || die "You must specify remote IP_ADDRESS"
 			if root_test ; then
 				die "You must run this progran as NON root user"
 			fi
@@ -52,8 +53,8 @@ main(){
 
 usage(){
         die "Usage" "$(basename "$0") {enable | disable | disconnect} " \
-            "       $(basename "$0") direct-connect {REMOTE_IP}" \
-            "       $(basename "$0") tunnel-connect {USER@REMOTE_IP}"
+            "       $(basename "$0") connect {REMOTE_IP}" \
+            "       $(basename "$0") create-tunnel {USER@REMOTE_IP}"
 }
 
 die(){
@@ -145,7 +146,7 @@ launch_tunnel(){
 	REMOTE_USER="$1"
 	REMOTE_IP="$2"
         TUN_IP="$3"
-	x-terminal-emulator -e sudo sshuttle -r "${REMOTE_USER}@${REMOTE_IP}" "$TUN_IP" &
+	sshuttle -r ${REMOTE_USER}@${REMOTE_IP} $TUN_IP --ssh-cmd 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
 }
 
 main "$@"
