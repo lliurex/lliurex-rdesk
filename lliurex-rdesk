@@ -30,7 +30,12 @@ main(){
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
 			TUN_IP="$(gen_net_ip)"
-			echo "run $0 connect $TUN_IP to access remote host"
+			echo "***********************************"
+			echo "Access remote host with command:"
+			echo ""
+			echo "$0 connect $TUN_IP"
+			echo ""
+			echo "***********************************"
 			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
 			;;
 
@@ -142,11 +147,27 @@ launch_rustdesk(){
 	rustdesk --connect "$REMOTE_IP"
 }
 
+tproxy_disable(){
+	echo "Removing TPROXY settings"
+	ip route del local default dev lo table 100
+	ip rule del fwmark 1 lookup 100
+}
+
+tproxy_enable(){
+	tproxy_disable
+	echo "Adding TPROXY settings"
+	ip route add local default dev lo table 100
+	ip rule add fwmark 1 lookup 100
+}
+
+
 launch_tunnel(){
 	REMOTE_USER="$1"
 	REMOTE_IP="$2"
         TUN_IP="$3"
-	sshuttle -r ${REMOTE_USER}@${REMOTE_IP} $TUN_IP --ssh-cmd 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+	tproxy_enable
+	sshuttle -vr ${REMOTE_USER}@${REMOTE_IP} $TUN_IP --method tproxy --ssh-cmd 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' || true
+	tproxy_disable
 }
 
 main "$@"
