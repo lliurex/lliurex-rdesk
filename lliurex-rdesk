@@ -1,5 +1,8 @@
 #!/bin/sh
 
+ROOT_CFG="/root/.config/rustdesk/RustDesk2.toml"
+SOCKS_PORT=1080
+
 # main function
 main(){
 	[ "$1" ] || usage
@@ -188,8 +191,69 @@ tproxy_enable(){
 	ip rule add fwmark 1 lookup 100
 }
 
+cfg_get_section(){
+	SEC_NAME='.*'
+	if [ "$1" ] ; then
+		SEC_NAME="$1"
+	fi
+	grep -n  "^\[${SEC_NAME}\]$" "$ROOT_CFG" |cut -f1 -d ':'
+}
+
+cfg_sections_from_line(){
+	BEGIN_LINE="$1"
+	cfg_get_section |while read l; do
+		if [ $l -gt $BEGIN_LINE ] ; then
+			echo "$l"
+		fi
+	done
+}
+
+cfg_backup(){
+	TIME_STAMP="$(date +%s)"
+	cp "$ROOT_CFG" "${ROOT_CFG}.${TIME_STAMP}"
+}
+
+
+socks5_enable(){
+	# TODO: find a better way to configure this settings ...
+	FIRST_LINE="$(cfg_get_section "socks")"
+	if [ "$FIRST_LINE" ]; then
+		LAST_LINE='$'
+		# get next section line number
+		NEXT_LINE="$(cfg_sections_from_line $FIRST_LINE |head -1)"
+		if [ "$NEXT_LINE" ]; then
+			LAST_LINE=$(($NEXT_LINE -1))
+		fi
+		cfg_backup
+		# remove section
+		sed -i -e "$FIRST_LINE,${LAST_LINE}D" "$ROOT_CFG"
+	fi
+	# create new section
+	cat <<EOF >> "$ROOT_CFG"
+
+[socks]
+proxy = 'socks5://localhost:$SOCKS_PORT'
+username = ''
+password = ''
+
+EOF
+	# restart service
+	RUSTDESK_SERVICE="rustdesk"
+	systemctl restart "$RUSTDESK_SERVICE"
+
+}
 
 launch_tunnel(){
+	launch_socks_tunnel "$@"
+}
+
+launch_socks_tunnel(){
+	REMOTE_USER="$1"
+	REMOTE_IP="$2"
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP}
+}
+
+launch_sshuttle_tunnel(){
 	REMOTE_USER="$1"
 	REMOTE_IP="$2"
         TUN_IP="$3"
