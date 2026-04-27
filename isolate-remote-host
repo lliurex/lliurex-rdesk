@@ -26,11 +26,11 @@ REMOTEHOST="$2"
 case "$1" in
 	lock)
 		enable_fw
-		echo "ENABLE ALL access to remote host: $REMOTEHOST "
+		echo "DISABLE ALL access (but SSH) to remote host: $REMOTEHOST "
 		;;
 	unlock)
 		disable_fw
-		echo "DISABLE ALL access (but SSH) to remote host: $REMOTEHOST "
+		echo "ENABLE ALL access to remote host: $REMOTEHOST "
 		;;
 	*)
 		usage
