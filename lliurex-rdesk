@@ -152,8 +152,12 @@ enable_connection(){
 	RND_PASS="$(gen_password)"
 	rustdesk --password "$CONN_PASS"
 
+	# disable connection if rustdesk window is closed
+	rustdesk --option allow-only-conn-window-open Y
+
+
 	# configure network alias
-	create_net_alias
+	# create_net_alias
 }
 
 
