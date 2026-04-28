@@ -19,7 +19,25 @@ main(){
 
 			CONN_PASS="$(gen_password)"
 			enable_connection "$CONN_PASS"
+
+			LOCAL_IP="$(echo "$SSH_CONNECTION" |cut -f 3 -d ' ')"
+
+			echo "Configuration completed"
+			echo "Connection is allowed ONLY if remote user opens RustDesk window"
+			echo "*****************************"
+		        echo "Run locally this COMMAND to connect to remote system:"
+			echo ""
+			echo "lliurex-rdesk connect $LOCAL_IP"
+			echo ""
 			echo "USE PASSWORD: $CONN_PASS"
+			echo "*****************************"
+			echo ""
+			a=""
+			while [ "$a" != "END" ] ; do
+				echo "Write 'END' and press ENTER to exit"
+				read a
+			done
+			disable_connection
 			;;
 
 		disable)
@@ -27,6 +45,25 @@ main(){
 			disable_connection
 			;;
 
+		remote-enable)
+	        	REMOTE_USER=""
+		        REMOTE_IP=""
+			if [ "$1" ] && echo "$1" |grep -q '@' ; then
+		        	REMOTE_USER="${1%@*}"
+			        REMOTE_IP="${1#*@}"
+			fi
+			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
+				die "You must specify remote USER@IP_ADDRESS"
+			fi
+
+			echo "***********************************"
+			echo "Access remote host with command:"
+			echo ""
+			echo "$0 connect $TUN_IP"
+			echo ""
+			echo "***********************************"
+			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
+			;;
 		create-tunnel)
 			root_test || die "You must be root to run this program"
 	        	REMOTE_USER=""
@@ -67,6 +104,7 @@ main(){
 
 usage(){
         die "Usage" "$(basename "$0") {enable | disable} " \
+            "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
             "       $(basename "$0") connect {REMOTE_IP}" \
             "       $(basename "$0") create-tunnel {USER@REMOTE_IP}"
 }
@@ -174,7 +212,8 @@ disable_connection(){
 	rustdesk --password ''
 
 	# remove network alias
-	delete_net_alias
+	
+	#delete_net_alias
 }
 
 launch_rustdesk(){
@@ -254,7 +293,8 @@ launch_tunnel(){
 launch_socks_tunnel(){
 	REMOTE_USER="$1"
 	REMOTE_IP="$2"
-	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP}
+	REMOTE_CMD="/home/admingva/lliurex-rdesk/lliurex-rdesk enable"
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} sudo -S $REMOTE_CMD
 }
 
 launch_sshuttle_tunnel(){
