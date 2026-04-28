@@ -43,6 +43,7 @@ main(){
 		disable)
 			root_test || die "You must be root to run this program"
 			disable_connection
+			echo "Configuration removed"
 			;;
 
 		remote-enable)
@@ -92,6 +93,7 @@ main(){
 			usage
 			;;
 	esac
+	exit 0
 
 }
 
