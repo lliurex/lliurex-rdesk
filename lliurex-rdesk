@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ROOT_CFG="/root/.config/rustdesk/RustDesk2.toml"
 SOCKS_PORT=1080
@@ -33,11 +33,17 @@ main(){
 			echo "*****************************"
 			echo ""
 			a=""
+			TIMEOUT="5"
 			while [ "$a" != "END" ] ; do
+				echo "Please DO NOT terminate this script with [CTRL] C"
 				echo "Write 'END' and press ENTER to exit"
-				read a
+				echo "This ensures that RustDesk access configuration is removed"
+				read -t $TIMEOUT a
+				echo ""
 			done
 			disable_connection
+			echo "Program terminated. Now is safe to use [CTRL] C if required"
+
 			;;
 
 		disable)
@@ -55,7 +61,18 @@ main(){
 			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
+			cat <<EOF
+************************** ATTENTION ************************************
+This script launchs an ssh connection to $REMOTE_IP as $REMOTE_USER
+to create a tunnel and to execute remote commands as root,
+so the acconunt used REQUIRES admin privileges (sudo) in remote host.
 
+You will be prompted twice to supply required password:
+first by the ssh client, and then by sudo program
+The script keeps the connection alive to allow the RustDesk connection
+across the SSH tunnel.
+************************************************************************
+EOF
 			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
 			;;
 		create-tunnel)
