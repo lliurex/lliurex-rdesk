@@ -19,7 +19,6 @@ main(){
 
 			CONN_PASS="$(gen_password)"
 			enable_connection "$CONN_PASS"
-			echo "$SSH_CONNECTION"
 
 			LOCAL_IP="$(echo "$SSH_CONNECTION" |cut -f 3 -d ' ')"
 
@@ -291,7 +290,7 @@ launch_socks_tunnel(){
 	REMOTE_USER="$1"
 	REMOTE_IP="$2"
 	REMOTE_CMD="/home/admingva/lliurex-rdesk/lliurex-rdesk enable"
-	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} sudo -S $REMOTE_CMD
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} sudo -S  --preserve-env=SSH_CONNECTION  $REMOTE_CMD
 }
 
 launch_sshuttle_tunnel(){
