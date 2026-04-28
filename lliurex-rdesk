@@ -56,12 +56,6 @@ main(){
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
 
-			echo "***********************************"
-			echo "Access remote host with command:"
-			echo ""
-			echo "$0 connect $TUN_IP"
-			echo ""
-			echo "***********************************"
 			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
 			;;
 		create-tunnel)
