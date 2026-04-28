@@ -19,6 +19,7 @@ main(){
 
 			CONN_PASS="$(gen_password)"
 			enable_connection "$CONN_PASS"
+			echo "$SSH_CONNECTION"
 
 			LOCAL_IP="$(echo "$SSH_CONNECTION" |cut -f 3 -d ' ')"
 
