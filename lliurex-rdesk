@@ -43,7 +43,6 @@ main(){
 		disable)
 			root_test || die "You must be root to run this program"
 			disable_connection
-			echo "Configuration removed"
 			;;
 
 		remote-enable)
@@ -192,6 +191,7 @@ enable_connection(){
 
 	# configure network alias
 	# create_net_alias
+	echo "Configuration enabled"
 }
 
 
@@ -210,6 +210,7 @@ disable_connection(){
 	# remove network alias
 	
 	#delete_net_alias
+	echo "Configuration disabled"
 }
 
 launch_rustdesk(){
