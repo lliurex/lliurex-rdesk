@@ -367,7 +367,7 @@ launch_socks_tunnel(){
 			REMOTE_CMD="sudo -S --preserve-env=SSH_CONNECTION $CMD_BASE $CMD_BASE enable"
 			;;
 		menu)
-			REMOTE_CMD="$CMD_BASE $CMD_BASE menu"
+			REMOTE_CMD="$CMD_BASE menu"
 			;;
 	esac
 
