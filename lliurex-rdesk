@@ -53,9 +53,9 @@ main(){
 			TIMEOUT="5"
 			show_menu
 			while [ "$a" != "4" ] ; do
-				printf "_"
+				printf "_\b"
 				read -t $TIMEOUT a
-				printf "\b"
+				printf " \b"
 				case "$a" in
 					1)
 						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD configure
