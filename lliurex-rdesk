@@ -71,6 +71,7 @@ main(){
 						;;
 					4)
 						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD disable
+						echo "Program terminated. Now is safe to use [CTRL] C if required"
 						exit 0
 						;;
 				esac
