@@ -2,6 +2,7 @@
 
 ROOT_CFG="/root/.config/rustdesk/RustDesk2.toml"
 SOCKS_PORT=1080
+RD_PASSWORD=""
 
 # main function
 main(){
@@ -25,44 +26,44 @@ main(){
 			echo "Configuration completed"
 			echo "Connection is allowed ONLY if remote user opens RustDesk window"
 			echo "*****************************"
+			echo ">IP: $LOCAL_IP"
+			echo ">PASSWORD: $CONN_PASS"
+			echo "*****************************"
+			echo ""
 		        echo "Run locally this COMMAND to connect to remote system:"
 			echo ""
 			echo "lliurex-rdesk connect $LOCAL_IP"
 			echo ""
-			echo "USE PASSWORD: $CONN_PASS"
-			echo "*****************************"
 			echo ""
-			if [ "$ACTION" = "enable" ] ; then
-				a=""
-				TIMEOUT="5"
-				while [ "$a" != "END" ] ; do
-					echo "Please DO NOT terminate this script with [CTRL] C"
-					echo "Write 'END' and press ENTER to exit"
-					echo "This ensures that RustDesk access configuration is removed"
-					read -t $TIMEOUT a
-					echo ""
-				done
-				disable_connection
-				echo "Program terminated. Now is safe to use [CTRL] C if required"
-			fi
 			;;
 
 		menu)
 			RDESK_CMD="$0"
 			a=""
-			TIMEOUT="5"
-			while [ "$a" != "4" ] ; do
-				show_menu
-				printf "_\b"
+			TIMEOUT="1.5"
+			n=0
+			show_menu
+			while [ "$a" != "0" ] ; do
+				if [ $n -eq 1 ] ; then
+					CHR=" "
+					n=0
+				else
+					CHR="_"
+					n=1
+				fi
+
+				printf "\r$CHR"
 				read -t $TIMEOUT a
 				printf " \b"
 				case "$a" in
 					1)
-						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD configure
+						TMP_FILE="$(mktemp)"
+						run_with_sudo $RDESK_CMD configure |tee "$TMP_FILE"
+
 						;;
 
 					2) 
-						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD disable
+						run_with_sudo $RDESK_CMD disable
 						;;
 
 					3)
@@ -70,11 +71,15 @@ main(){
 						echo "(To unlock, use command 'sudo loginctl unlock-session {ID})')"
 						;;
 
+					8)
+						show_menu
+						;;
 					9)
 						/bin/bash
+						# bash --rcfile /tmp/bashrc 
 						;;
 					0)
-						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD disable
+						run_with_sudo $RDESK_CMD disable
 						echo "Program terminated. Now is safe to use [CTRL] C if required"
 						exit 0
 						;;
@@ -101,31 +106,6 @@ main(){
 			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
 			;;
 
-		remote-enable)
-	        	REMOTE_USER=""
-		        REMOTE_IP=""
-			if [ "$1" ] && echo "$1" |grep -q '@' ; then
-		        	REMOTE_USER="${1%@*}"
-			        REMOTE_IP="${1#*@}"
-			fi
-			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
-				die "You must specify remote USER@IP_ADDRESS"
-			fi
-			cat <<EOF
-************************** ATTENTION ************************************
-This script launchs an ssh connection to $REMOTE_IP as $REMOTE_USER
-to create a tunnel and to execute remote commands as root,
-so the acconunt used REQUIRES admin privileges (sudo) in remote host.
-
-You will be prompted twice to supply required password:
-first by the ssh client, and then by sudo program
-The script keeps the connection alive to allow the RustDesk connection
-across the SSH tunnel.
-************************************************************************
-EOF
-			CMD_OPTION="enable"
-			launch_socks_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
-			;;
 		create-tunnel)
 			root_test || die "You must be root to run this program"
 	        	REMOTE_USER=""
@@ -190,17 +170,65 @@ die(){
 }
 
 show_menu(){
+	clear
+	echo "HOST INFO"
+	echo "--------------------------------"
+	show_local_info
+	echo -e "\nRUSTDESK ACCESS INFO"
+	echo "--------------------------------"
+	show_rustdesk_info
 	cat <<EOF
-RDESK (OLD SCHOOL) MENU
-*********************************
+
+********************************
+RDESK OPTIONS MENU
+********************************
 1 Enable access (sudo required)
 2 Disable access (sudo required)
-3 list current sessions
-9 local shell
-0 exit
-*********************************
+3 List current sessions
+--------------------------------
+8 Refresh info
+9 Run local shell
+0 Exit
+--------------------------------
+
 EOF
 }
+
+get_ip(){
+	# get first default route iface name
+	GW_IFACE="$(LANG=C ip -4 route list 0/0 |head -1 |cut -d ' ' -f 5)"
+	# print IP of GW_IFACE
+	LANG=C ip a show dev "$GW_IFACE" |sed -ne "/^\s*inet\s/{s%^\s*inet\s*%%;s%/.*$%%;p}"
+}
+
+show_local_info(){
+	cat <<EOF
+HOST_NAME: $(hostname -f)
+HOST_ADDRESS:  $(get_ip)
+HOST_VERSION: $(lliurex-version)
+HOST_TAGS: $(lliurex-version -g --tag-prefix '')
+EOF
+}
+
+show_rustdesk_info(){
+	RD_VERSION="$(LANG=C dpkg -l rustdesk |tail -1 |sed -e "s%\s\+%\t%g" |cut -f 3)"
+	RD_STATUS="ENABLED"
+	check_connection || RD_STATUS="DISABLED"
+	RD_WINDOW="Y"
+	ps -ef |grep -q "/usr/bin/rustdesk$" || RD_WINDOW="N"
+
+cat <<EOF
+RUSTDESK_VERSION: $RD_VERSION
+RUSTDESK_ACCESS_STATUS: $RD_STATUS
+RUSTDESK_PASSWORD: $RD_PASSWORD
+RUSTDESK_WINDOW_DETECTED: $RD_WINDOW
+EOF
+}
+
+run_with_sudo(){
+	sudo --preserve-env=SSH_CONNECTION "$@"
+}
+
 
 root_test(){
 	[ $(id -u) -eq 0 ] || return 1
@@ -277,6 +305,7 @@ enable_connection(){
 }
 
 
+
 disable_connection(){
 	# configure rustdesk
 
@@ -293,6 +322,14 @@ disable_connection(){
 	
 	#delete_net_alias
 	echo "Configuration disabled"
+}
+
+check_connection(){
+	# check status of 'direct-server' option
+	# to guess if rustdesk is configured
+	# for remote access
+	rustdesk --option direct-server |grep -q "Y" || return 1
+	return 0
 }
 
 launch_rustdesk(){
