@@ -362,7 +362,7 @@ launch_socks_tunnel(){
 	REMOTE_IP="$2"
 	OPTION_CMD="$3"
 	CMD_BASE="/home/admingva/lliurex-rdesk/lliurex-rdesk"
-	case "$REMOTE_CMD" in
+	case "$OPTION_CMD" in
 		enable)
 			REMOTE_CMD="sudo -S --preserve-env=SSH_CONNECTION $CMD_BASE $CMD_BASE enable"
 			;;
