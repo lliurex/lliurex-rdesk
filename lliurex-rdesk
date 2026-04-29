@@ -9,7 +9,7 @@ main(){
 	ACTION="$1"
 	shift
 	case "$ACTION" in
-		enable)
+		configure|enable)
 			root_test || die "You must be root to run this program"
 			if ! test_rustdesk_installation ; then
 				if ! install_rustdesk ; then
@@ -32,23 +32,74 @@ main(){
 			echo "USE PASSWORD: $CONN_PASS"
 			echo "*****************************"
 			echo ""
+			if [ "$ACTION" = "enable" ] ; then
+				a=""
+				TIMEOUT="5"
+				while [ "$a" != "END" ] ; do
+					echo "Please DO NOT terminate this script with [CTRL] C"
+					echo "Write 'END' and press ENTER to exit"
+					echo "This ensures that RustDesk access configuration is removed"
+					read -t $TIMEOUT a
+					echo ""
+				done
+				disable_connection
+				echo "Program terminated. Now is safe to use [CTRL] C if required"
+			fi
+			;;
+
+		menu)
+			RDESK_CMD="$0"
 			a=""
 			TIMEOUT="5"
-			while [ "$a" != "END" ] ; do
-				echo "Please DO NOT terminate this script with [CTRL] C"
-				echo "Write 'END' and press ENTER to exit"
-				echo "This ensures that RustDesk access configuration is removed"
+			while [ "$a" != "4" ] ; do
+				cat <<EOF
+RDESK (OLD SCHOOL) MENU
+*********************************
+1 Enable access (sudo required)
+2 Disable access (sudo required)
+3 local shell
+4 exit
+*********************************
+EOF
 				read -t $TIMEOUT a
 				echo ""
-			done
-			disable_connection
-			echo "Program terminated. Now is safe to use [CTRL] C if required"
+				case "$a" in
+					1)
+						sudo  $RDESK_CMD configure
+						;;
 
+					2) 
+						sudo  $RDESK_CMD disable
+						;;
+
+					3)
+						/bin/bash
+						;;
+					4)
+						sudo  $RDESK_CMD disable
+						exit 0
+						;;
+				esac
+			done
 			;;
 
 		disable)
 			root_test || die "You must be root to run this program"
 			disable_connection
+			;;
+
+		remote-menu)
+	        	REMOTE_USER=""
+		        REMOTE_IP=""
+			if [ "$1" ] && echo "$1" |grep -q '@' ; then
+		        	REMOTE_USER="${1%@*}"
+			        REMOTE_IP="${1#*@}"
+			fi
+			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
+				die "You must specify remote USER@IP_ADDRESS"
+			fi
+			CMD_OPTION="menu"
+			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
 			;;
 
 		remote-enable)
@@ -73,7 +124,8 @@ The script keeps the connection alive to allow the RustDesk connection
 across the SSH tunnel.
 ************************************************************************
 EOF
-			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
+			CMD_OPTION="enable"
+			launch_socks_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
 			;;
 		create-tunnel)
 			root_test || die "You must be root to run this program"
@@ -115,8 +167,9 @@ EOF
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable} " \
+        die "Usage" "$(basename "$0") {enable | disable | configure | menu}" \
             "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
+            "       $(basename "$0") remote-menu {USER@REMOTE_IP}" \
             "       $(basename "$0") connect {REMOTE_IP}" \
             "       $(basename "$0") create-tunnel {USER@REMOTE_IP}"
 }
@@ -307,8 +360,18 @@ launch_tunnel(){
 launch_socks_tunnel(){
 	REMOTE_USER="$1"
 	REMOTE_IP="$2"
-	REMOTE_CMD="/home/admingva/lliurex-rdesk/lliurex-rdesk enable"
-	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} sudo -S  --preserve-env=SSH_CONNECTION  $REMOTE_CMD
+	OPTION_CMD="$3"
+	CMD_BASE="/home/admingva/lliurex-rdesk/lliurex-rdesk"
+	case "$REMOTE_CMD" in
+		enable)
+			REMOTE_CMD="sudo -S --preserve-env=SSH_CONNECTION $CMD_BASE $CMD_BASE enable"
+			;;
+		menu)
+			REMOTE_CMD="$CMD_BASE $CMD_BASE menu"
+			;;
+	esac
+
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} $REMOTE_CMD
 }
 
 launch_sshuttle_tunnel(){
