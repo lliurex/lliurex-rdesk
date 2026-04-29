@@ -65,18 +65,18 @@ EOF
 				echo ""
 				case "$a" in
 					1)
-						sudo  $RDESK_CMD configure
+						sudo -S --preserve-env=SSH_CONNECTION $RDESK_CMD configure
 						;;
 
 					2) 
-						sudo  $RDESK_CMD disable
+						sudo -S --preserve-env=SSH_CONNECTION $RDESK_CMD disable
 						;;
 
 					3)
 						/bin/bash
 						;;
 					4)
-						sudo  $RDESK_CMD disable
+						sudo -S --preserve-env=SSH_CONNECTION $RDESK_CMD disable
 						exit 0
 						;;
 				esac
