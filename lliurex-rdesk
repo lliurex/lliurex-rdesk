@@ -51,8 +51,8 @@ main(){
 			RDESK_CMD="$0"
 			a=""
 			TIMEOUT="5"
-			show_menu
 			while [ "$a" != "4" ] ; do
+				show_menu
 				printf "_\b"
 				read -t $TIMEOUT a
 				printf " \b"
@@ -66,10 +66,14 @@ main(){
 						;;
 
 					3)
-						/bin/bash
-						show_menu
+						loginctl list-sessions
+						echo "(To unlock, use command 'sudo loginctl unlock-session {ID})')"
 						;;
-					4)
+
+					9)
+						/bin/bash
+						;;
+					0)
 						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD disable
 						echo "Program terminated. Now is safe to use [CTRL] C if required"
 						exit 0
@@ -191,8 +195,9 @@ RDESK (OLD SCHOOL) MENU
 *********************************
 1 Enable access (sudo required)
 2 Disable access (sudo required)
-3 local shell
-4 exit
+3 list current sessions
+9 local shell
+0 exit
 *********************************
 EOF
 }
