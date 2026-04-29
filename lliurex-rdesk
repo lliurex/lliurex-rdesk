@@ -65,18 +65,18 @@ EOF
 				echo ""
 				case "$a" in
 					1)
-						sudo -S --preserve-env=SSH_CONNECTION $RDESK_CMD configure
+						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD configure
 						;;
 
 					2) 
-						sudo -S --preserve-env=SSH_CONNECTION $RDESK_CMD disable
+						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD disable
 						;;
 
 					3)
 						/bin/bash
 						;;
 					4)
-						sudo -S --preserve-env=SSH_CONNECTION $RDESK_CMD disable
+						sudo --preserve-env=SSH_CONNECTION $RDESK_CMD disable
 						exit 0
 						;;
 				esac
@@ -364,14 +364,14 @@ launch_socks_tunnel(){
 	CMD_BASE="/home/admingva/lliurex-rdesk/lliurex-rdesk"
 	case "$OPTION_CMD" in
 		enable)
-			REMOTE_CMD="sudo -S --preserve-env=SSH_CONNECTION $CMD_BASE enable"
+			REMOTE_CMD="sudo --preserve-env=SSH_CONNECTION $CMD_BASE enable"
 			;;
 		menu)
 			REMOTE_CMD="$CMD_BASE menu"
 			;;
 	esac
 
-	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} $REMOTE_CMD
+	ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} $REMOTE_CMD
 }
 
 launch_sshuttle_tunnel(){
