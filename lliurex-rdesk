@@ -186,23 +186,23 @@ show_menu(){
 	clear
 	get_ssh_ip
 	cat <<EOF
-********************************
+*******************************************
 * RDESK CONSOLE
 * CONNECTED AS: $USER@$SSH_SERVER_IP
 *         FROM: $SSH_CLIENT_IP
-********************************
+*******************************************
 
 HOST INFO
 --------------------------------
 EOF
 	show_local_info
-	echo -e "\nRUSTDESK ACCESS INFO"
+	echo -e "\nRUSTDESK INFO"
 	echo "--------------------------------"
 	show_rustdesk_info
 	cat <<EOF
 
 ********************************
-RDESK OPTIONS MENU
+* RDESK OPTIONS MENU
 ********************************
 1 Enable access (sudo required)
 2 Disable access (sudo required)
@@ -233,7 +233,7 @@ show_local_info(){
 HOST_NAME: $(hostname -f)
 HOST_IP_ADDRESS:  $(get_ip)
 HOST_VERSION: $(lliurex-version)
-HOST_TAGS: $(lliurex-version -g --tag-prefix '')
+HOST_TAGS: $(lliurex-version -g --tag-prefix '           ' |sed -e "1s%^\s*%HOST_TAGS: %")
 EOF
 }
 
