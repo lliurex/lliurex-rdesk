@@ -6,7 +6,7 @@ RD_PASSWORD=""
 RD_IP=""
 SSH_CLIENT_IP=""
 SSH_SERVER_IP=""
-RUNTIME_FILE="/dev/shm/lliurex-rdesk"
+RUNTIME_FILE=""
 # main function
 main(){
 	[ "$1" ] || usage
@@ -146,7 +146,7 @@ main(){
 			launch_rustdesk "$REMOTE_IP"
 			;;
 		info)
-			show_local_info
+			show_host_info
 			;;
 
 		*)
@@ -182,22 +182,41 @@ die(){
         exit 1
 }
 
+
+
 show_menu(){
 	clear
 	get_ssh_ip
 	cat <<EOF
 *******************************************
 * RDESK CONSOLE
-* CONNECTED AS: $USER@$SSH_SERVER_IP
-*         FROM: $SSH_CLIENT_IP
+EOF
+	if [ "$SSH_CLIENT_IP" ] ; then
+		echo "* CONNECTED AS: $USER@$SSH_SERVER_IP"
+		echo "*         FROM: $SSH_CLIENT_IP"
+	else
+		echo "* LOCAL SESION"
+	fi
+	cat <<EOF
 *******************************************
 
 HOST INFO
---------------------------------
+---------
 EOF
-	show_local_info
+	show_host_info
+	if which lliurex-version >/dev/null ; then
+		echo -e "\nLLIUREX INFO"
+		echo  "------------"
+		show_lliurex_info
+	else
+		echo -e "\nSO INFO"
+		echo "-------"
+		lsb_release -a
+	else
+	fi
+
 	echo -e "\nRUSTDESK INFO"
-	echo "--------------------------------"
+	echo  "-------------"
 	show_rustdesk_info
 	cat <<EOF
 
@@ -228,12 +247,17 @@ get_ip(){
 	LANG=C ip a show dev "$GW_IFACE" |sed -ne "/^\s*inet\s/{s%^\s*inet\s*%%;s%/.*$%%;p}"
 }
 
-show_local_info(){
+show_host_info(){
 	cat <<EOF
 HOST_NAME: $(hostname -f)
 HOST_IP_ADDRESS:  $(get_ip)
+EOF
+}
+
+show_lliurex_info(){
+	cat <<EOF
 HOST_VERSION: $(lliurex-version)
-HOST_TAGS: $(lliurex-version -g --tag-prefix '           ' |sed -e "1s%^\s*%HOST_TAGS: %")
+$(lliurex-version -g --tag-prefix '           ' |sed -e "1s%^\s*%HOST_TAGS: %")
 EOF
 }
 
@@ -258,17 +282,36 @@ parse_value(){
 	sed -ne "/^$KEY:/{s%^.*:\s*%%;p}"
 }
 
+runtime_close(){
+	rm -f "$RUNTIME_FILE"
+}
+runtime_open(){
+	if [ "$RUNTIME_FILE" ] && [ -w "$RUNTIME_FILE" ] ; then
+		return 0
+	fi
+	RUNTIME_DIR="$XDG_RUNTIME_DIR"
+	if [ -z "$RUNTIME_DIR" ] || [ ! -w "$RUNTIME_DIR" ] ; then
+		RUNTIME_DIR="/dev/shm/$USER"
+		mkdir -p "$RUNTIME_DIR"
+	fi
+	RUNTIME_FILE="$RUNTIME_DIR/lliurex-rdesk"
+	touch "$RUNTIME_FILE"
+}
+
 runtime_read(){
+	runtime_open
 	KEY="$1"
 	parse_value "$KEY" "$RUNTIME_FILE"
 }
 
 runtime_delete(){
+	runtime_open
 	KEY="$1"
 	sed -i -e "/^${KEY}:/d" "$RUNTIME_FILE"
 }
 
 runtime_write(){
+	runtime_open
 	KEY="$1"
 	VALUE="$2"
 	runtime_delete "$KEY"
