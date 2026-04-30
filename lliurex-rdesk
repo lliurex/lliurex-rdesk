@@ -3,7 +3,10 @@
 ROOT_CFG="/root/.config/rustdesk/RustDesk2.toml"
 SOCKS_PORT=1080
 RD_PASSWORD=""
-
+RD_IP=""
+SSH_CLIENT_IP=""
+SSH_SERVER_IP=""
+RUNTIME_FILE="/dev/shm/lliurex-rdesk"
 # main function
 main(){
 	[ "$1" ] || usage
@@ -20,19 +23,18 @@ main(){
 
 			CONN_PASS="$(gen_password)"
 			enable_connection "$CONN_PASS"
-
-			LOCAL_IP="$(echo "$SSH_CONNECTION" |cut -f 3 -d ' ')"
+			get_ssh_ip
 
 			echo "Configuration completed"
 			echo "Connection is allowed ONLY if remote user opens RustDesk window"
 			echo "*****************************"
-			echo ">IP: $LOCAL_IP"
+			echo ">IP: $SSH_SERVER_IP"
 			echo ">PASSWORD: $CONN_PASS"
 			echo "*****************************"
 			echo ""
 		        echo "Run locally this COMMAND to connect to remote system:"
 			echo ""
-			echo "lliurex-rdesk connect $LOCAL_IP"
+			echo "lliurex-rdesk connect $SSH_SERVER_IP"
 			echo ""
 			echo ""
 			;;
@@ -59,7 +61,9 @@ main(){
 					1)
 						TMP_FILE="$(mktemp)"
 						run_with_sudo $RDESK_CMD configure |tee "$TMP_FILE"
-
+						RD_PASSWORD="$(parse_value ">PASSWORD" "$TMP_FILE")"
+						RD_IP="$(parse_value ">IP" "$TMP_FILE")"
+						rm -f "$TMP_FILE"
 						;;
 
 					2) 
@@ -102,6 +106,7 @@ main(){
 			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
+			runtime_write "RD_IP" "$REMOTE_IP"
 			CMD_OPTION="menu"
 			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
 			;;
@@ -128,12 +133,20 @@ main(){
 			;;
 
 		connect)
-			[ "$1" ] || die "You must specify remote IP_ADDRESS"
+			if [ "$1" ] ; then
+				REMOTE_IP="$1"
+			else
+				REMOTE_IP="$(runtime_read "RD_IP")"
+			fi
+			[ "$REMOTE_IP" ] || die "Unable to determine remote IP_ADDRESS, please specify in command line"
 			if root_test ; then
 				die "You must run this progran as NON root user"
 			fi
 		        REMOTE_IP="${1}"
 			launch_rustdesk "$REMOTE_IP"
+			;;
+		info)
+			show_local_info
 			;;
 
 		*)
@@ -146,10 +159,10 @@ main(){
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | configure | menu}" \
+        die "Usage" "$(basename "$0") {enable | disable | configure | menu | info}" \
             "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
             "       $(basename "$0") remote-menu {USER@REMOTE_IP}" \
-            "       $(basename "$0") connect {REMOTE_IP}" \
+            "       $(basename "$0") connect [REMOTE_IP]" \
             "       $(basename "$0") create-tunnel {USER@REMOTE_IP}"
 }
 
@@ -171,8 +184,17 @@ die(){
 
 show_menu(){
 	clear
-	echo "HOST INFO"
-	echo "--------------------------------"
+	get_ssh_ip
+	cat <<EOF
+********************************
+* RDESK CONSOLE
+* CONNECTED AS: $USER@$SSH_SERVER_IP
+*         FROM: $SSH_CLIENT_IP
+********************************
+
+HOST INFO
+--------------------------------
+EOF
 	show_local_info
 	echo -e "\nRUSTDESK ACCESS INFO"
 	echo "--------------------------------"
@@ -194,6 +216,11 @@ RDESK OPTIONS MENU
 EOF
 }
 
+get_ssh_ip(){
+	SSH_CLIENT_IP="$(echo "$SSH_CONNECTION" |cut -f 1 -d ' ')"
+	SSH_SERVER_IP="$(echo "$SSH_CONNECTION" |cut -f 3 -d ' ')"
+}
+
 get_ip(){
 	# get first default route iface name
 	GW_IFACE="$(LANG=C ip -4 route list 0/0 |head -1 |cut -d ' ' -f 5)"
@@ -204,7 +231,7 @@ get_ip(){
 show_local_info(){
 	cat <<EOF
 HOST_NAME: $(hostname -f)
-HOST_ADDRESS:  $(get_ip)
+HOST_IP_ADDRESS:  $(get_ip)
 HOST_VERSION: $(lliurex-version)
 HOST_TAGS: $(lliurex-version -g --tag-prefix '')
 EOF
@@ -223,6 +250,29 @@ RUSTDESK_ACCESS_STATUS: $RD_STATUS
 RUSTDESK_PASSWORD: $RD_PASSWORD
 RUSTDESK_WINDOW_DETECTED: $RD_WINDOW
 EOF
+}
+
+parse_value(){
+	KEY="$1"
+	FILE="$2"
+	sed -ne "/^$KEY:/{s%^.*:\s*%%;p}"
+}
+
+runtime_read(){
+	KEY="$1"
+	parse_value "$KEY" "$RUNTIME_FILE"
+}
+
+runtime_delete(){
+	KEY="$1"
+	sed -i -e "/^${KEY}:/d" "$RUNTIME_FILE"
+}
+
+runtime_write(){
+	KEY="$1"
+	VALUE="$2"
+	runtime_delete "$KEY"
+	echo "$KEY: $VALUE" >> "$RUNTIME_FILE"
 }
 
 run_with_sudo(){
