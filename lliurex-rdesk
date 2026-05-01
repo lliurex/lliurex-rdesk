@@ -93,8 +93,16 @@ main(){
 						# bash --rcfile /tmp/bashrc 
 						;;
 					0)
-						run_with_sudo $RDESK_CMD disable
-						echo "Program terminated. Now is safe to use [CTRL] C if required"
+						if [ "$RD_STATUS" = "enabled" ] ; then
+							echo "RUSTDESK ACCESS is enabled"
+							echo "Disable configuration before exiting? (Y/N)"
+							b=""
+							while [ "$b" != "Y" ] && [ "$b" != "N" ] ; do
+								read b
+							done
+							[ "$b" = "N" ] || run_with_sudo $RDESK_CMD disable
+						fi
+						echo "Program terminated. Now is safe to use [CTRL] C if required to return to SO"
 						exit 0
 						;;
 				esac
