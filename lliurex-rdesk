@@ -60,7 +60,8 @@ main(){
 				case "$a" in
 					1)
 						TMP_FILE="$(mktemp)"
-						run_with_sudo $RDESK_CMD configure |tee "$TMP_FILE"
+						run_with_sudo $RDESK_CMD configure > "$TMP_FILE"
+						cat "$TMP_FILE"
 						RD_PASSWORD="$(parse_value ">PASSWORD" "$TMP_FILE")"
 						RD_IP="$(parse_value ">IP" "$TMP_FILE")"
 						rm -f "$TMP_FILE"
@@ -88,6 +89,11 @@ main(){
 						exit 0
 						;;
 				esac
+				if [ "$a" ] ; then
+					# refresh
+					a=""
+					show_menu
+				fi
 			done
 			;;
 
@@ -145,6 +151,10 @@ main(){
 		        REMOTE_IP="${1}"
 			launch_rustdesk "$REMOTE_IP"
 			;;
+		configure-socks)
+			root_test || die "You must be root to run this program"
+			socks5_enable
+			;;
 		info)
 			show_host_info
 			;;
@@ -159,7 +169,7 @@ main(){
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | configure | menu | info}" \
+        die "Usage" "$(basename "$0") {enable | disable | configure | menu | info | configure-socks}" \
             "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
             "       $(basename "$0") remote-menu {USER@REMOTE_IP}" \
             "       $(basename "$0") connect [REMOTE_IP]" \
