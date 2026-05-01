@@ -278,7 +278,7 @@ EOF
 parse_value(){
 	KEY="$1"
 	FILE="$2"
-	sed -ne "/^$KEY:/{s%^.*:\s*%%;p}"
+	sed -ne "/^$KEY:/{s%^.*:\s*%%;p}" "$FILE"
 }
 
 runtime_close(){
