@@ -212,7 +212,6 @@ EOF
 		echo -e "\nSO INFO"
 		echo "-------"
 		lsb_release -a
-	else
 	fi
 
 	echo -e "\nRUSTDESK INFO"
