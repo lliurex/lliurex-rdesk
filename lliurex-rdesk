@@ -2,11 +2,12 @@
 
 ROOT_CFG="/root/.config/rustdesk/RustDesk2.toml"
 SOCKS_PORT=1080
-RD_PASSWORD=""
+RD_PASSWORD="?????"
 RD_IP=""
 SSH_CLIENT_IP=""
 SSH_SERVER_IP=""
 RUNTIME_FILE=""
+RD_STATUS="?????"
 # main function
 main(){
 	[ "$1" ] || usage
@@ -60,15 +61,23 @@ main(){
 				case "$a" in
 					1)
 						TMP_FILE="$(mktemp)"
-						run_with_sudo $RDESK_CMD configure > "$TMP_FILE"
-						cat "$TMP_FILE"
-						RD_PASSWORD="$(parse_value ">PASSWORD" "$TMP_FILE")"
-						RD_IP="$(parse_value ">IP" "$TMP_FILE")"
+						rc=0
+						run_with_sudo $RDESK_CMD configure > "$TMP_FILE" || rc=$?
+						if [ $rc -eq 0 ] ; then
+							RD_PASSWORD="$(parse_value ">PASSWORD" "$TMP_FILE")"
+							RD_IP="$(parse_value ">IP" "$TMP_FILE")"
+							RD_STATUS="enabled"
+						fi
 						rm -f "$TMP_FILE"
 						;;
 
 					2) 
-						run_with_sudo $RDESK_CMD disable
+						rc=0
+						run_with_sudo $RDESK_CMD disable || rc=$?
+						if [ $rc -eq 0 ] ; then
+							RD_PASSWORD="?????"
+							RD_STATUS="disabled"
+						fi
 						;;
 
 					3)
@@ -272,8 +281,6 @@ EOF
 
 show_rustdesk_info(){
 	RD_VERSION="$(LANG=C dpkg -l rustdesk |tail -1 |sed -e "s%\s\+%\t%g" |cut -f 3)"
-	RD_STATUS="ENABLED"
-	check_connection || RD_STATUS="DISABLED"
 	RD_WINDOW="Y"
 	ps -ef |grep -q "/usr/bin/rustdesk$" || RD_WINDOW="N"
 
@@ -424,14 +431,6 @@ disable_connection(){
 	
 	#delete_net_alias
 	echo "Configuration disabled"
-}
-
-check_connection(){
-	# check status of 'direct-server' option
-	# to guess if rustdesk is configured
-	# for remote access
-	rustdesk --option direct-server |grep -q "Y" || return 1
-	return 0
 }
 
 launch_rustdesk(){
