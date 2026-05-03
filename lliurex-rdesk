@@ -133,9 +133,16 @@ main(){
 			if [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_IP" ] ; then
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
+			RUSTDESK_PID="$(runtime_read 'REMOTE_CONSOLE')"
+			if process_check "$RUSTDESK_PID" ; then
+			       die "Remote-console already running"
+			fi
+			runtime_close
+			runtime_write "REMOTE_CONSOLE" "$$"
 			runtime_write "RD_IP" "$REMOTE_IP"
 			CMD_OPTION="local-console"
 			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
+			runtime_close
 			;;
 
 		create-tunnel)
@@ -196,12 +203,13 @@ main(){
 			runtime_delete "POPUP"
 			;;
 		allow-access)
-			RUSTDESK_PID="$(runtime_read ACCESS)"
-			echo "$RUSTDESK_PID"
-			! process_check "$RUSTDESK_PID" || exit 0
+			RUSTDESK_PID="$(runtime_read ALLOW_ACCESS)"
+			if process_check "$RUSTDESK_PID" ; then
+			       die "Allow-access already running"
+			fi
 			runtime_close
 			$0 popup &
-			runtime_write "ACCESS" "$$"
+			runtime_write "ALLOW_ACCESS" "$$"
 		        rustdesk
 			pkill -f 'rustdesk --tray'
 			runtime_close
