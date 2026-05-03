@@ -98,10 +98,10 @@ main(){
 						;;
 					0)
 						if [ "$RD_STATUS" = "enabled" ] ; then
-							echo "RUSTDESK ACCESS is enabled"
-							echo "Disable configuration before exiting? (Y/N)"
 							b=""
 							while [ "$b" != "Y" ] && [ "$b" != "N" ] ; do
+								echo "RUSTDESK ACCESS is enabled"
+								echo "Disable configuration before exiting? (Y/N)"
 								read b
 							done
 							[ "$b" = "N" ] || run_with_sudo $RDESK_CMD disable
@@ -169,7 +169,6 @@ main(){
 			if root_test ; then
 				die "You must run this progran as NON root user"
 			fi
-		        REMOTE_IP="${1}"
 			launch_rustdesk "$REMOTE_IP"
 			;;
 		configure-socks)
@@ -183,12 +182,11 @@ main(){
 			if runtime_exists "POPUP" ; then
 				return 0
 			fi
-			TIMEOUT=300
+
 			SHOW_POPUP="Y"
 			runtime_write "POPUP" "ACTIVE"
 			while  [ "$SHOW_POPUP" ] ; do
-				kdialog --passivepopup "$(show_host_info)" $TIMEOUT
-				sleep $TIMEOUT
+				notify-send -w -a lliurex-rdesk -t 0 "$(show_host_info)"
 				if check_rustdesk_window ; then
 		                        SHOW_POPUP="Y"
 				else
