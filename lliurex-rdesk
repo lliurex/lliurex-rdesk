@@ -199,9 +199,8 @@ main(){
 			RUSTDESK_PID="$(runtime_read ACCESS)"
 			process_kill "$RUSTDESK_PID"
 			runtime_close
-			runtime_write "ACCESS" "$$"
 			$0 popup &
-			rustdesk
+			sh -c "echo 'ACCESS: $$' >> $RUNTIME_FILE ; exec rustdesk"
 			pkill -f 'rustdesk --tray'
 			runtime_close
 			;;
