@@ -393,7 +393,7 @@ runtime_write(){
 
 process_kill(){
 	PID="$1"
-	killl -9 "$PID" 2>/dev/null
+	kill -9 "$PID" 2>/dev/null
 }
 
 run_with_sudo(){
