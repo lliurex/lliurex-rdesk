@@ -14,7 +14,7 @@ main(){
 	ACTION="$1"
 	shift
 	case "$ACTION" in
-		configure|enable)
+		enable)
 			root_test || die "You must be root to run this program"
 			if ! test_rustdesk_installation ; then
 				if ! install_rustdesk ; then
@@ -40,7 +40,7 @@ main(){
 			echo ""
 			;;
 
-		menu)
+		local-console)
 			RDESK_CMD="$0"
 			a=""
 			TIMEOUT="1.5"
@@ -62,13 +62,15 @@ main(){
 					1)
 						TMP_FILE="$(mktemp)"
 						rc=0
-						run_with_sudo $RDESK_CMD configure > "$TMP_FILE" || rc=$?
+						run_with_sudo $RDESK_CMD enable > "$TMP_FILE" || rc=$?
+						cat "$TMP_FILE"
 						if [ $rc -eq 0 ] ; then
 							RD_PASSWORD="$(parse_value ">PASSWORD" "$TMP_FILE")"
 							RD_IP="$(parse_value ">IP" "$TMP_FILE")"
 							RD_STATUS="enabled"
 						fi
 						rm -f "$TMP_FILE"
+						pause_menu
 						;;
 
 					2) 
@@ -82,13 +84,15 @@ main(){
 
 					3)
 						loginctl list-sessions
-						echo "(To unlock, use command 'sudo loginctl unlock-session {ID})')"
+						echo "(To unlock, open a shell and execute command 'sudo loginctl unlock-session {ID})')"
+						pause_menu
 						;;
 
 					8)
 						show_menu
 						;;
 					9)
+						echo "Use 'exit' command to return to RDesk console"
 						/bin/bash
 						# bash --rcfile /tmp/bashrc 
 						;;
@@ -119,7 +123,7 @@ main(){
 			disable_connection
 			;;
 
-		remote-menu)
+		remote-console)
 	        	REMOTE_USER=""
 		        REMOTE_IP=""
 			if [ "$1" ] && echo "$1" |grep -q '@' ; then
@@ -130,7 +134,7 @@ main(){
 				die "You must specify remote USER@IP_ADDRESS"
 			fi
 			runtime_write "RD_IP" "$REMOTE_IP"
-			CMD_OPTION="menu"
+			CMD_OPTION="local-console"
 			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
 			;;
 
@@ -155,7 +159,7 @@ main(){
 			launch_tunnel  "$REMOTE_USER" "$REMOTE_IP" "$TUN_IP"
 			;;
 
-		connect)
+		desktop)
 			if [ "$1" ] ; then
 				REMOTE_IP="$1"
 			else
@@ -175,7 +179,29 @@ main(){
 		info)
 			show_host_info
 			;;
-
+		popup)
+			if runtime_exists "POPUP" ; then
+				return 0
+			fi
+			TIMEOUT=300
+			SHOW_POPUP="Y"
+			runtime_write "POPUP" "ACTIVE"
+			while  [ "$SHOW_POPUP" ] ; do
+				kdialog --passivepopup "$(show_host_info)" $TIMEOUT
+				sleep $TIMEOUT
+				if check_rustdesk_window ; then
+		                        SHOW_POPUP="Y"
+				else
+		                        SHOW_POPUP=""
+				fi
+			done
+			runtime_delete "POPUP"
+			;;
+		allow-access)
+			$0 popup &
+			rustdesk
+			pkill -f 'rustdesk --tray'
+			;;
 		*)
 			usage
 			;;
@@ -186,10 +212,10 @@ main(){
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | configure | menu | info | configure-socks}" \
+        die "Usage" "$(basename "$0") {enable | disable | local-console | info | allow-access | configure-socks}" \
             "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
-            "       $(basename "$0") remote-menu {USER@REMOTE_IP}" \
-            "       $(basename "$0") connect [REMOTE_IP]" \
+            "       $(basename "$0") remote-console {USER@REMOTE_IP}" \
+            "       $(basename "$0") desktop [REMOTE_IP]" \
             "       $(basename "$0") create-tunnel {USER@REMOTE_IP}"
 }
 
@@ -209,6 +235,10 @@ die(){
         exit 1
 }
 
+pause_menu(){
+	echo "Press ENTER key to return to RDesk console menu"
+	read b
+}
 
 
 show_menu(){
@@ -290,7 +320,7 @@ EOF
 show_rustdesk_info(){
 	RD_VERSION="$(LANG=C dpkg -l rustdesk |tail -1 |sed -e "s%\s\+%\t%g" |cut -f 3)"
 	RD_WINDOW="Y"
-	ps -ef |grep -q "/usr/bin/rustdesk$" || RD_WINDOW="N"
+	check_rustdesk_window || RD_WINDOW="N"
 
 cat <<EOF
 RUSTDESK_VERSION: $RD_VERSION
@@ -298,6 +328,17 @@ RUSTDESK_ACCESS_STATUS: $RD_STATUS
 RUSTDESK_PASSWORD: $RD_PASSWORD
 RUSTDESK_WINDOW_DETECTED: $RD_WINDOW
 EOF
+}
+
+list_rustdesk_procs(){
+	ps ax |grep "rustdesk" |grep -v grep
+}
+
+check_rustdesk_window(){
+	if list_rustdesk_procs |grep -q "rustdesk$" || list_rustdesk_procs |grep -q "connect" ; then
+		return 0
+	fi
+	return 1
 }
 
 parse_value(){
@@ -326,6 +367,11 @@ runtime_read(){
 	runtime_open
 	KEY="$1"
 	parse_value "$KEY" "$RUNTIME_FILE"
+}
+
+runtime_exists(){
+	[ "$(runtime_read "$1")" ] || return 1
+	return 0
 }
 
 runtime_delete(){
@@ -524,12 +570,12 @@ launch_socks_tunnel(){
 		enable)
 			REMOTE_CMD="sudo --preserve-env=SSH_CONNECTION $CMD_BASE enable"
 			;;
-		menu)
-			REMOTE_CMD="$CMD_BASE menu"
+		local-console)
+			REMOTE_CMD="$CMD_BASE local-console"
 			;;
 	esac
 
-	ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} $REMOTE_CMD
+	ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} "$REMOTE_CMD 2>/dev/null || echo '$CMD_BASE is NOT INSTALLLED in remote host'"
 }
 
 launch_sshuttle_tunnel(){
