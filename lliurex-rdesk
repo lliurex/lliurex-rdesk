@@ -393,6 +393,7 @@ runtime_write(){
 
 process_check(){
 	PID="$1"
+	[ "$PID" ] || return 1
 	[ -d "/proc/$PID" ] || return 1
 	return 0
 }
