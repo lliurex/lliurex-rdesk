@@ -197,6 +197,7 @@ main(){
 			;;
 		allow-access)
 			RUSTDESK_PID="$(runtime_read ACCESS)"
+			echo "$RUSTDESK_PID"
 			! process_check "$RUSTDESK_PID" || exit 0
 			runtime_close
 			$0 popup &
