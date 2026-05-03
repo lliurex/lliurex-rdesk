@@ -196,9 +196,14 @@ main(){
 			runtime_delete "POPUP"
 			;;
 		allow-access)
+			RUSTDESK_PID="$(runtime_read ACCESS)"
+			process_kill "$RUSTDESK_PID"
+			runtime_close
+			runtime_write "ACCESS" "$$"
 			$0 popup &
 			rustdesk
 			pkill -f 'rustdesk --tray'
+			runtime_close
 			;;
 		*)
 			usage
@@ -386,11 +391,17 @@ runtime_write(){
 	echo "$KEY: $VALUE" >> "$RUNTIME_FILE"
 }
 
+process_kill(){
+	PID="$1"
+	killl -9 "$PID" 2>/dev/null
+}
+
 run_with_sudo(){
 	sudo --preserve-env=SSH_CONNECTION "$@"
 }
 
 
+			
 root_test(){
 	[ $(id -u) -eq 0 ] || return 1
 	return 0
