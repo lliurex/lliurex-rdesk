@@ -197,10 +197,11 @@ main(){
 			;;
 		allow-access)
 			RUSTDESK_PID="$(runtime_read ACCESS)"
-			process_kill "$RUSTDESK_PID"
+			process_check "$RUSTDESK_PID" || exit 0
 			runtime_close
 			$0 popup &
-			sh -c "echo 'ACCESS: $$' >> $RUNTIME_FILE ; exec rustdesk"
+			runtime_write "ACCESS" "$$"
+		        rustdesk
 			pkill -f 'rustdesk --tray'
 			runtime_close
 			;;
@@ -390,9 +391,10 @@ runtime_write(){
 	echo "$KEY: $VALUE" >> "$RUNTIME_FILE"
 }
 
-process_kill(){
+process_check(){
 	PID="$1"
-	kill -9 "$PID" 2>/dev/null
+	[ -d "/proc/$PID" ] || return 1
+	return 0
 }
 
 run_with_sudo(){
