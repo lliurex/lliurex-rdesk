@@ -25,9 +25,6 @@
         <mxCell id="4sb_WaoprpBtggo0eRNI-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 20px; color: rgb(27, 100, 176);&quot;&gt;&lt;i&gt;Corporative&amp;nbsp; computer&lt;/i&gt;&lt;/font&gt;" vertex="1">
           <mxGeometry height="30" width="210" x="520" y="290" as="geometry" />
         </mxCell>
-        <mxCell id="4sb_WaoprpBtggo0eRNI-16" parent="1" style="text;whiteSpace=wrap;html=1;" value="18599C" vertex="1">
-          <mxGeometry height="40" width="80" x="850" y="90" as="geometry" />
-        </mxCell>
         <mxCell id="4sb_WaoprpBtggo0eRNI-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 20px; color: rgb(27, 100, 176);&quot;&gt;&lt;i&gt;Tunnelled connection via corporative network&lt;/i&gt;&lt;/font&gt;" vertex="1">
           <mxGeometry height="30" width="210" x="297.02" y="190" as="geometry" />
         </mxCell>
