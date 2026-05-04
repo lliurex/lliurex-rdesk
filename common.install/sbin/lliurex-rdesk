@@ -36,7 +36,7 @@ main(){
 			echo ""
 		        echo "Run locally this COMMAND to connect to remote system:"
 			echo ""
-			echo "lliurex-rdesk connect $SSH_SERVER_IP"
+			echo "lliurex-rdesk desktop [$SSH_SERVER_IP]"
 			echo ""
 			echo ""
 			;;
@@ -141,8 +141,7 @@ main(){
 			runtime_close
 			runtime_write "REMOTE_CONSOLE" "$$"
 			runtime_write "RD_IP" "$REMOTE_IP"
-			CMD_OPTION="local-console"
-			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "$CMD_OPTION"
+			launch_socks_tunnel "$REMOTE_USER" "$REMOTE_IP" "local-console"
 			runtime_close
 			;;
 
@@ -181,11 +180,11 @@ main(){
 			;;
 		socks-enable)
 			root_test || die "You must be root to run this program"
-			socks_enable
+			socks_enable "$@"
 			;;
 		socks-disable)
 			root_test || die "You must be root to run this program"
-			socks_disable
+			socks_disable "$@"
 			;;
 		info)
 			show_host_info
@@ -229,8 +228,8 @@ main(){
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | local-console | info | allow-access | socks-enable | socks-disable}" \
-            "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
+        die "Usage" "$(basename "$0") {enable | disable | local-console | info | popup | allow-access}" \
+            "       $(basename "$0") {socks-enable | socks-disable} [OPTIONS]" \
             "       $(basename "$0") remote-console {USER@REMOTE_IP}" \
             "       $(basename "$0") desktop [REMOTE_IP]" \
             "       $(basename "$0") create-tunnel {USER@REMOTE_IP}"
@@ -603,7 +602,9 @@ username = ''
 password = ''
 
 EOF
-	rustdesk_restart
+	if ! echo "$@" |grep -q "no-restart" ; then
+		rustdesk_restart
+	fi
 }
 
 launch_tunnel(){
@@ -615,14 +616,11 @@ launch_socks_tunnel(){
 	REMOTE_IP="$2"
 	OPTION_CMD="$3"
 	CMD_BASE="lliurex-rdesk"
-	case "$OPTION_CMD" in
-		enable)
-			REMOTE_CMD="sudo --preserve-env=SSH_CONNECTION $CMD_BASE enable"
-			;;
-		local-console)
-			REMOTE_CMD="$CMD_BASE local-console"
-			;;
-	esac
+	REMOTE_CMD="$CMD_BASE $OPTION_CMD"
+	if [ "$OPTION_CMD" = "enable" ] ; then
+		# deprecated
+		REMOTE_CMD="sudo --preserve-env=SSH_CONNECTION $CMD_BASE enable"
+	fi
 
 	ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} "$REMOTE_CMD 2>/dev/null || echo '$CMD_BASE is NOT INSTALLLED in remote host'"
 }
