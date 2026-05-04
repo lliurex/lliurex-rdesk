@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# main function
+main(){
+	[ "$1" ] || usage
+	ACTION="$1"
+	case "$ACTION" in
+		console)
+			shift
+			exec lliurex-rdesk local-console "$@"
+			;;
+		local-console|enable|disable|info|popup|allow-access)
+			exec lliurex-rdesk "$@"
+			;;
+		*)
+			usage
+			;;
+	esac
+	exit 0
+
+}
+
+usage(){
+        die "Usage" "$(basename "$0") {enable | disable | local-console|console | info | popup | allow-access}"
+}
+
+die(){
+        TYPE="ERROR"
+        if [ "$#" -gt 1 ] ; then
+                TYPE="$1"
+                shift
+        fi
+        printf "${TYPE}: " >&2
+        while [ "$1" ] ; do
+                echo "$1" >&2
+                shift
+        done
+        echo "" >&2
+
+        exit 1
+}
+
+main "$@"
+	
+
