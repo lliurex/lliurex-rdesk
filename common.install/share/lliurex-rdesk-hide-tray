@@ -1,0 +1,28 @@
+#!/bin/sh
+PFILE=/dev/shm/rdesk-hide-tray.shm
+
+create_pfile(){
+	# create PIDFILE and make writable by all users
+	echo $$ > "$PFILE"
+	chmod 666 "$PFILE"
+}
+
+hide_tray(){
+	pkill -f 'rustdesk --tray' || true
+}
+
+while : ; do
+	if [ ! -e "$PFILE" ] ||  ! pgrep -F "$PFILE" 2> /dev/null > /dev/null ; then
+		# PIDFILE not exists OR PIDFILE exists but process is not running
+		# replace process
+		create_pfile
+	elif [ "$(cat "$PFILE")" != "$$" ] ; then
+		# an alternative process is running
+		# nothing to do
+		echo "Program already running. Exiting"
+		exit 0
+	fi
+	hide_tray
+	sleep 3
+done
+
