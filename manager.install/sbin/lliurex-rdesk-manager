@@ -1,0 +1,49 @@
+#!/bin/bash
+MANAGER_CFG_FILE="/etc/lliurex-rdesk/manager.cfg"
+
+# main function
+main(){
+	[ "$1" ] || usage
+	ACTION="$1"
+	case "$ACTION" in
+
+		console)
+			shift
+			exec lliurex-rdesk remote-console "$@"
+			;;
+
+		remote-console|desktop|socks-enable|socks_disable)
+			exec lliurex-rdesk "$@"
+			;;
+		*)
+			usage
+			;;
+	esac
+	exit 0
+}
+
+
+usage(){
+        die "Usage" "$(basename "$0") remote-console|console {USER@REMOTE_IP}" \
+            "       $(basename "$0") {socks-enable | socks-disable} [OPTIONS]"
+}
+
+die(){
+        TYPE="ERROR"
+        if [ "$#" -gt 1 ] ; then
+                TYPE="$1"
+                shift
+        fi
+        printf "${TYPE}: " >&2
+        while [ "$1" ] ; do
+                echo "$1" >&2
+                shift
+        done
+        echo "" >&2
+
+        exit 1
+}
+
+main "$@"
+	
+
