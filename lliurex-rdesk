@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ROOT_CFG="/root/.config/rustdesk/RustDesk2.toml"
+ROOT_CFG_DIR="/root/.config/rustdesk/"
+ROOT_CFG="$ROOT_CFG_DIR/RustDesk2.toml"
 SOCKS_PORT=1080
 RD_PASSWORD="?????"
 RD_IP=""
@@ -178,9 +179,13 @@ main(){
 			fi
 			launch_rustdesk "$REMOTE_IP"
 			;;
-		configure-socks)
+		socks-enable)
 			root_test || die "You must be root to run this program"
-			socks5_enable
+			socks_enable
+			;;
+		socks-disable)
+			root_test || die "You must be root to run this program"
+			socks_disable
 			;;
 		info)
 			show_host_info
@@ -224,7 +229,7 @@ main(){
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | local-console | info | allow-access | configure-socks}" \
+        die "Usage" "$(basename "$0") {enable | disable | local-console | info | allow-access | socks-enable | socks-disable}" \
             "       $(basename "$0") remote-enable {USER@REMOTE_IP}" \
             "       $(basename "$0") remote-console {USER@REMOTE_IP}" \
             "       $(basename "$0") desktop [REMOTE_IP]" \
@@ -542,13 +547,33 @@ cfg_sections_from_line(){
 	done
 }
 
+cfg_list(){
+	ls -1 "$ROOT_CFG_DIR" | grep "^RustDesk2\.toml\.[[:digit:]]\+$" |sort -u
+}
+
 cfg_backup(){
 	TIME_STAMP="$(date +%s)"
 	cp "$ROOT_CFG" "${ROOT_CFG}.${TIME_STAMP}"
+	# remove oldest backups
+	MAX_BACKUP_FILES=4
+	while [ "$(cfg_list |wc -l)" -gt $MAX_BACKUP_FILES ] ; do
+		OLDEST_FILE="$(cfg_list |head -1)"
+		rm -f "$ROOT_CFG_DIR/$OLDEST_FILE"
+	done
 }
 
+rustdesk_restart(){
+	systemctl daemon-reload
+	# restart service
+	RUSTDESK_SERVICE="rustdesk"
+	systemctl restart "$RUSTDESK_SERVICE"
+}
 
-socks5_enable(){
+socks_disable(){
+	if ! echo "$@" |grep -q "no-backup" ; then
+		cfg_backup
+	fi
+
 	# TODO: find a better way to configure this settings ...
 	FIRST_LINE="$(cfg_get_section "socks")"
 	if [ "$FIRST_LINE" ]; then
@@ -558,10 +583,17 @@ socks5_enable(){
 		if [ "$NEXT_LINE" ]; then
 			LAST_LINE=$(($NEXT_LINE -1))
 		fi
-		cfg_backup
 		# remove section
 		sed -i -e "$FIRST_LINE,${LAST_LINE}D" "$ROOT_CFG"
 	fi
+
+	if ! echo "$@" |grep -q "no-restart" ; then
+		rustdesk_restart
+	fi
+}
+
+socks_enable(){
+	socks_disable no-restart
 	# create new section
 	cat <<EOF >> "$ROOT_CFG"
 
@@ -571,10 +603,7 @@ username = ''
 password = ''
 
 EOF
-	# restart service
-	RUSTDESK_SERVICE="rustdesk"
-	systemctl restart "$RUSTDESK_SERVICE"
-
+	rustdesk_restart
 }
 
 launch_tunnel(){
