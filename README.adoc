@@ -35,9 +35,9 @@ The access to the remote client is not transparent and **can NOT be operated in 
 
 ## Packages
 
-- lliurex-rdesk-manager: provides configuration and tools for manager host
-- lliurex-rdesk-client: required package for client devices
-- lliurex-rdesk-common: common stuff. It's a required dependency of manager and client packages
+- **lliurex-rdesk-manager**: provides configuration and tools for manager host
+- **lliurex-rdesk-client**: required package for client devices
+- **lliurex-rdesk-common**: common stuff. It's a required dependency of manager and client packages
 
 ## Usage
 
