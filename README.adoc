@@ -14,10 +14,10 @@ Luis Garcia
 :imagesdir: ./images
 
 ## Context
-**Wayland** is now the default display server in most of the actual linux distributions, including LliureX25 (Based on Ubuntu 24.04).
-Most of the remote Desktop control solutions that work on X11, fail on Wayland, therefore, for the deployment of Lliurex25, it was essential to have a tool capable of providing remote support for computers running Wayland.
+**Wayland** is now the default display server in most of the actual linux distributions, including LliureX 25 (Based on Ubuntu 24.04).
+Most of the remote Desktop control solutions that work on X11, fail on Wayland, therefore, for the deployment of Lliurex 25, it was essential to have a tool capable of providing remote support for computers running Wayland.
 
-The DGIE provides the educational community with IT and equipment support services (SAI/SILO). Until now, the selected tool for remote desktop assistance in Windows and previous versions of LliureX, was **AnyDesk , but, unfortunately, this aplication is not compatible with Wayland.**
+The DGIE provides the educational community with IT and equipment support services (SAI/SILO). Until now, the selected tool for remote desktop assistance in Windows and previous versions of LliureX was **AnyDesk , but, unfortunately, this aplication is not compatible with Wayland.**
 
 To solve this problem, the LliureX development team has implemented a remote access solution based on **RustDesk**. RustDesk is a multifeatured remote desktop application written in rust with (experminental) support for Wayland. 
 
