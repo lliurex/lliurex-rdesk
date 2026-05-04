@@ -41,8 +41,8 @@ The access to the remote client is not transparent and **can NOT be operated in 
 
 ## Usage
 
+### lliurex-rdesk
 ```
-**lliurex-rdesk**
 Usage: lliurex-rdesk {enable | disable | local-console | info | popup | allow-access}
        lliurex-rdesk {socks-enable | socks-disable} [OPTIONS]
        lliurex-rdesk remote-console {USER@REMOTE_IP}
