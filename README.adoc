@@ -14,24 +14,24 @@ Luis Garcia
 :imagesdir: ./images
 
 ## Context
-Wayland is now the default display server in most of the actual linux distributions, including LliureX25 (Based on Ubuntu 24.04).
-Most of the remote Desktop control solutions taht work on X11, fail on Wayland, therefore, for the deployment of Lliurex25, it was essential to have a tool capable of providing remote support for computers running Wayland.
+**Wayland** is now the default display server in most of the actual linux distributions, including LliureX25 (Based on Ubuntu 24.04).
+Most of the remote Desktop control solutions that work on X11, fail on Wayland, therefore, for the deployment of Lliurex25, it was essential to have a tool capable of providing remote support for computers running Wayland.
 
-The DGIE provides the educational community with IT and equipment support services (SAI/SILO) and the selected tool for remote desktop in Windows and previous versions of LliureX, was AnyDesk , but, unfortunately, this aplication is not compatible with Wayland.
+The DGIE provides the educational community with IT and equipment support services (SAI/SILO). Until now, the selected tool for remote desktop assistance in Windows and previous versions of LliureX, was **AnyDesk , but, unfortunately, this aplication is not compatible with Wayland.**
 
-To solve this problem, the LliureX development team has implemented a remote access solution based on RustDesk. RustDesk is a multifeatured remote desktop application written in rust with (experminental) support for Wayland. 
+To solve this problem, the LliureX development team has implemented a remote access solution based on **RustDesk**. RustDesk is a multifeatured remote desktop application written in rust with (experminental) support for Wayland. 
 
 ## Concepts
 In this context of remote management, we will use the terms of:
 
-- 'manager' and 'manager host' to refer to the technician and the computer used to take control over a managed device in an educational centre
-- 'client' and 'client host' for the managed remote system user and computer respectively
+- **'manager'** and 'manager host' to refer to the technician and the computer used to take control over a managed device in an educational centre
+- **'client'** and 'client host' for the managed remote system user and computer respectively
 
 image::concepts.svg[]
 
-LliureX RDesk requires a direct connection from the manager to the remote client host without needing any intermediate RustDesk server. It uses a single ssh connection to create a tunnel (proxy socks) and configure RustDesk appropriately at each end to use the tunnel, so ONLY ssh port (22 TCP) is needed. LliureX RDesk manages all the required comunications between manager and client over the ssh tunnel.
+LliureX RDesk requires a **direct connection** from the manager to the remote client host **without needing any intermediate RustDesk server**. It **uses a single ssh connection to create a tunnel (proxy socks)** and configure RustDesk appropriately at each end to use the tunnel, so ONLY ssh port (22 TCP) is needed. LliureX RDesk manages **all the required comunications between manager and client over the ssh tunnel.**
 
-The access to the remote client is not transparent and not can be operated in a full unattended way. The remote user must activate the software (rustdesk) in a conscious way to allow and accept the manager access. The user can also terminate connection at any time. interactithe is notified of the c
+The access to the remote client is not transparent and **can NOT be operated in a full unattended way**. The remote user must activate the software (rustdesk) in a conscious way to allow and accept the manager access. The user can also terminate connection at any time.
 
 ## Packages
 
