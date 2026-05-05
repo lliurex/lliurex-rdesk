@@ -48,12 +48,18 @@ The access to the remote client is not transparent and **can NOT be operated in 
 ## Quick start
 
 ### Client device
-Just install lliurex-rdesk-client package:
+Just install lliurex-rdesk-client package to get dependecies and RustDesk configuration:
 ```
 sudo apt install lliurex-rdesk-client
 ```
-This install the required packages to configure RustDesk.
+To allow access, client user must run 'lliurex-rdesk-allow-access? from a terminal or apllications menu.
+That's old in client side.
 
+### Manager computer
+Install lliurex-rdesk-manager package:
+```
+sudo apt install lliurex-rdesk-manager
+```
  
 
 ## Usage
