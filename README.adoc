@@ -52,10 +52,10 @@ Just install lliurex-rdesk-client package to get dependeincies and RustDesk conf
 ```
 sudo apt install lliurex-rdesk-client
 ```
-image::lliurex-rdesk-allow-access.svg[height=40]
-To allow access, client user must run 'lliurex-rdesk-allow-access' from a terminal or application menu.
+That's all in client side.
 
-That's old in client side.
+To allow access, client user must run 'lliurex-rdesk-allow-access' from a terminal or application menu.
+image::lliurex-rdesk-allow-access.svg[height=40]
 
 ### Manager computer
 Install lliurex-rdesk-manager package:
