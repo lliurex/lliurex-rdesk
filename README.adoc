@@ -47,7 +47,7 @@ The access to the remote client is not transparent and **can NOT be operated in 
 
 ## Quick start
 
-### Cient device
+### Client device
 Just install lliurex-rdesk-client package:
 ```
 sudo apt install lliurex-rdesk-client
