@@ -1,0 +1,26 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Lliurex-RDesk-Allow
+Name[en]=LliureX Rdesk allow access
+Name[es]=Permitir acceso a LliureX RDesk
+Name[qcv]=Permetre accés a LliureX RDesk
+Name[ca]=Permetre accés a LliureX RDesk
+Name[ca_ES]=Permetre accés a LliureX RDesk
+Name[ca_ES.UTF-8@valencia]=Permetre accés a LliureX RDesk
+Name[ca_ES@valencia]=Permetre accés a LliureX RDesk
+Comment=Remote desktop control activation for assistance
+Comment[en]=Remote desktop control activation for assistance
+Comment[es]=Activación del control remoto del escritorio para asistencia
+Comment[qcv]=Activació del control remot de l'escriptori per a assistència
+Comment[ca]=Activació del control remot de l'escriptori per a assistència
+Comment[ca_ES]=Activació del control remot de l'escriptori per a assistència
+Comment[ca_ES.UTF-8@valencia]=Activació del control remot de l'escriptori per a assistència
+Comment[ca_ES@valencia]=Activació del control remot de l'escriptori per a assistència
+Exec=lliurex-rdesk-allow-access
+Terminal=false
+Icon=/home/lgarciag/github/lliurex/lliurex-rdesk/images/lliurex-rdesk-allow-access.svg
+Type=Application
+GenericName=Lliurex-RDesk-Allow
+NoDisplay=false
+Categories=LliureX-Administration;
