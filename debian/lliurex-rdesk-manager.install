@@ -1,0 +1,4 @@
+manager.install/sbin/*		/usr/sbin
+manager.install/bin/*		/usr/bin
+manager.install/share/*		/usr/share
+images/lliurex-rdesk-manager-*	/usr/share/lliurex-rdesk-manager

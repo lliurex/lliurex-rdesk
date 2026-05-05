@@ -1,0 +1,40 @@
+Source: lliurex-rdesk
+Section: admin
+Priority: optional
+Maintainer: Luis Garcia Gisbert <luisgg@gmail.com>
+Uploaders: LliureX Team
+Build-Depends: debhelper (>= 9.0)
+Standards-Version: 4.4.1
+Homepage: https://github.com/lliurex/lliurex-rdesk
+
+Package: lliurex-rdesk-common
+Architecture: all
+Pre-Depends: rustdesk (>= 1.4.6)
+Depends: ${misc:Depends},
+		procps,
+		openssh-client || ssh-client,
+		lsb-release,
+		iproute2,
+		systemd,
+		libnotify-bin
+Recommends: lliurex-base-files
+Description: common files for LliureX-RDesk
+ LliureX-RDesk is a simple remote desktop control tool
+ based on RustDesk with Wayland support.
+
+Package: lliurex-rdesk-client
+Architecture: all
+Depends: ${misc:Depends},
+		lliurex-rdesk-common (= ${binary:Version})
+Description:  LliureX-RDesk files for managed devices (clients)
+ LliureX-RDesk is a simple remote desktop control tool
+ based on RustDesk with Wayland support.
+
+Package: lliurex-rdesk-manager
+Architecture: all
+Depends: ${misc:Depends},
+		lliurex-rdesk-common (= ${binary:Version})
+Description:  LliureX-RDesk files for the manager host
+ LliureX-RDesk is a simple remote desktop control tool
+ based on RustDesk with Wayland support.
+

@@ -1,0 +1,2 @@
+common.install/sbin/*				/usr/sbin
+common.install/share/lliurex-rdesk-common/*	/usr/share/lliurex-rdesk-common

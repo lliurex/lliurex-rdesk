@@ -1,0 +1,4 @@
+client.install/sbin/*			/usr/sbin
+client.install/bin/*			/usr/bin
+client.install/share/*			/usr/share
+images/lliurex-rdesk-allow-access.svg	/usr/share/lliurex-rdesk-client
