@@ -52,7 +52,7 @@ Just install lliurex-rdesk-client package to get dependeincies and RustDesk conf
 ```
 sudo apt install lliurex-rdesk-client
 ```
-image::lliurex-rdesk-allow-access.svg[height=80]
+image::lliurex-rdesk-allow-access.svg[height=40]
 To allow access, client user must run 'lliurex-rdesk-allow-access' from a terminal or application menu.
 
 That's old in client side.
