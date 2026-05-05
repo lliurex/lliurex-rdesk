@@ -18,6 +18,7 @@ Luis Garcia
 image::lliurex-rdesk-allow-access.svg[height=80]
 
 Simple remote desktop control based on RustDesk with Wayland support and using just a single ssh connection to create a tunnel without any firewall configurations or hosting a server.
+
 ## Context
 **Wayland** is now the default display server in most of the actual linux distributions, including LliureX 25 (Based on Ubuntu 24.04).
 Most of the remote desktop control solutions that work on X11, fail on Wayland, therefore, for the deployment of Lliurex 25, it was essential to have a tool capable of providing remote support for computers running Wayland.
