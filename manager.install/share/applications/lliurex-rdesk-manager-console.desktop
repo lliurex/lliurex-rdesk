@@ -19,7 +19,7 @@ Comment[ca_ES.UTF-8@valencia]=Consola de Gestor per a Control Remot d'Escriptori
 Comment[ca_ES@valencia]=Consola de Gestor per a Control Remot d'Escriptori
 Exec=lliurex-rdesk-manager-console
 Terminal=true
-Icon=/home/lgarciag/github/lliurex/lliurex-rdesk/images/lliurex-rdesk-manager-console.svg
+Icon=/usr/share/lliurex-rdesk-manager/lliurex-rdesk-manager-console.svg
 Type=Application
 GenericName=Name=Lliurex-RDesk-Manager-Console
 NoDisplay=false

@@ -19,7 +19,7 @@ Comment[ca_ES.UTF-8@valencia]=Accés a Escriptori Remot per a assistència
 Comment[ca_ES@valencia]=Accés a Escriptori Remot per a assistència 
 Exec=lliurex-rdesk-manager-desktop
 Terminal=true
-Icon=/home/lgarciag/github/lliurex/lliurex-rdesk/images/lliurex-rdesk-manager-desktop.svg
+Icon=/usr/share/lliurex-rdesk-manager/lliurex-rdesk-manager-desktop.svg
 Type=Application
 GenericName=Name=Lliurex-RDesk-Manager-Desktop
 NoDisplay=false
