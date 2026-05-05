@@ -13,9 +13,12 @@ Luis Garcia
 :sectnums:
 :imagesdir: ./images
 
+## LliureX RDesk
+image::lliurex-rdesk-allow-access.svg[]
+Simple remote desktop control based on RustDesk with Wayland support and using just a single ssh connection to create a tunnel without any firewall configurations or hosting a server.
 ## Context
 **Wayland** is now the default display server in most of the actual linux distributions, including LliureX 25 (Based on Ubuntu 24.04).
-Most of the remote Desktop control solutions that work on X11, fail on Wayland, therefore, for the deployment of Lliurex 25, it was essential to have a tool capable of providing remote support for computers running Wayland.
+Most of the remote desktop control solutions that work on X11, fail on Wayland, therefore, for the deployment of Lliurex 25, it was essential to have a tool capable of providing remote support for computers running Wayland.
 
 The DGIE provides the educational community with IT and equipment support services (SAI/SILO). Until now, the selected tool for remote desktop assistance in Windows and previous versions of LliureX was **AnyDesk , but, unfortunately, this aplication is not compatible with Wayland.**
 
@@ -38,6 +41,17 @@ The access to the remote client is not transparent and **can NOT be operated in 
 - **lliurex-rdesk-manager**: provides configuration and tools for manager host
 - **lliurex-rdesk-client**: required package for client devices
 - **lliurex-rdesk-common**: common stuff. It's a required dependency of manager and client packages
+
+## Quick start
+
+### Cient device
+Just install lliurex-rdesk-client package:
+```
+sudo apt install lliurex-rdesk-client
+```
+This install the required packages to configure RustDesk.
+
+ 
 
 ## Usage
 
