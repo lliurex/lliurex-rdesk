@@ -15,7 +15,7 @@ Luis Garcia
 
 ## LliureX RDesk
 
-image::lliurex-rdesk-allow-access.svg[height=80]
+image::lliurex-rdesk.svg[height=80]
 
 Simple remote desktop control based on RustDesk with Wayland support and using just a single ssh connection to create a tunnel without any firewall configurations or hosting a server.
 
