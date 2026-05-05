@@ -1,0 +1,26 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Lliurex-RDesk-Manager-Console
+Name[en]=LliureX Rdesk Manager Console
+Name[es]=Consola de Mánager de LliureX RDesk
+Name[qcv]=Consola de Gestor de LliureX RDesk
+Name[ca]=Consola de Gestor de LliureX RDesk
+Name[ca_ES]=Consola de Gestor de LliureX RDesk
+Name[ca_ES.UTF-8@valencia]=Consola de Gestor de LliureX RDesk
+Name[ca_ES@valencia]=Consola de Gestor de LliureX RDesk
+Comment=Remote desktop control Manager Console
+Comment[en]=Remote desktop control Manager Console
+Comment[es]=Consola de Mánager para Control Remoto de Escritorio
+Comment[qcv]=Consola de Gestor per a Control Remot d'Escriptori
+Comment[ca]=Consola de Gestor per a Control Remot d'Escriptori
+Comment[ca_ES]=Consola de Gestor per a Control Remot d'Escriptori
+Comment[ca_ES.UTF-8@valencia]=Consola de Gestor per a Control Remot d'Escriptori
+Comment[ca_ES@valencia]=Consola de Gestor per a Control Remot d'Escriptori
+Exec=lliurex-rdesk-manager-console
+Terminal=true
+Icon=/home/lgarciag/github/lliurex/lliurex-rdesk/images/lliurex-rdesk-manager-console.svg
+Type=Application
+GenericName=Name=Lliurex-RDesk-Manager-Console
+NoDisplay=false
+Categories=LliureX-Administration;

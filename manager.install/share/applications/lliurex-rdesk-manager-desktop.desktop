@@ -1,0 +1,26 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=Lliurex-RDesk-Manager-Desktop
+Name[en]=LliureX Rdesk Manager Remote Desktop
+Name[es]=Escritorio Remoto para Mánager de LliureX RDesk
+Name[qcv]=Escriptori Remot per a Gestor de LliureX RDesk
+Name[ca]=Escriptori Remot per a Gestor de LliureX RDesk
+Name[ca_ES]=Escriptori Remot per a Gestor de LliureX RDesk
+Name[ca_ES.UTF-8@valencia]=Escriptori Remot per a Gestor de LliureX RDesk
+Name[ca_ES@valencia]=Escriptori Remot per a Gestor de LliureX RDesk
+Comment=Remote Desktop access for assistance
+Comment[en]=Acceso a Escritorio Remoto para asistencia
+Comment[es]=Consola de Mánager para Control Remoto de Escritorio
+Comment[qcv]=Accés a Escriptori Remot per a assistència 
+Comment[ca]=Accés a Escriptori Remot per a assistència 
+Comment[ca_ES]=Accés a Escriptori Remot per a assistència 
+Comment[ca_ES.UTF-8@valencia]=Accés a Escriptori Remot per a assistència 
+Comment[ca_ES@valencia]=Accés a Escriptori Remot per a assistència 
+Exec=lliurex-rdesk-manager-desktop
+Terminal=true
+Icon=/home/lgarciag/github/lliurex/lliurex-rdesk/images/lliurex-rdesk-manager-desktop.svg
+Type=Application
+GenericName=Name=Lliurex-RDesk-Manager-Desktop
+NoDisplay=false
+Categories=LliureX-Administration;
