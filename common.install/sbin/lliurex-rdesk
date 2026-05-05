@@ -1,4 +1,5 @@
 #!/bin/bash
+MANAGER_CFG_FILE="/etc/lliurex-rdesk/manager.cfg"
 
 ROOT_CFG_DIR="/root/.config/rustdesk/"
 ROOT_CFG="$ROOT_CFG_DIR/RustDesk2.toml"
@@ -9,6 +10,9 @@ SSH_CLIENT_IP=""
 SSH_SERVER_IP=""
 RUNTIME_FILE=""
 RD_STATUS="?????"
+
+[ ! -r "$MANAGER_CFG_FILE" ] || . $MANAGER_CFG_FILE
+
 # main function
 main(){
 	[ "$1" ] || usage
