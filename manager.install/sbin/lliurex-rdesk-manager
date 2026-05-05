@@ -1,5 +1,4 @@
 #!/bin/bash
-MANAGER_CFG_FILE="/etc/lliurex-rdesk/manager.cfg"
 
 # main function
 main(){
