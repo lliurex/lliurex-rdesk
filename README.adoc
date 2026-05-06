@@ -61,7 +61,7 @@ The client RustDesk configuration is done from the manager, so that's all in cli
 
 #### Run 'lliurex-rdesk-allow-access'
 
-image::lliurex-rdesk-allow-access.svg[height=60]
+image::lliurex-rdesk-allow-access.svg[height=50]
 
 To grant access to manager, **client user must run 'lliurex-rdesk-allow-access'** from a terminal or application menu.
 
@@ -83,7 +83,7 @@ In order to get control over a remote client, you need:
 
 #### Run 'lliurex-rdesk-manager-console' to access the remote client.
 
-image::lliurex-rdesk-manager-console.svg[height=60]
+image::lliurex-rdesk-manager-console.svg[height=50]
 
 You can supply the user and the host address in command line:
 
@@ -151,7 +151,7 @@ You must leave this console open to ensure that the tunnel remains active.
 
 #### Run 'lliurex-rdesk-manager-desktop'
 
-image::lliurex-rdesk-manager-desktop.svg[height=60]
+image::lliurex-rdesk-manager-desktop.svg[height=50]
 
 You can invoke the program in a separate terminal or from applications menu.
 
