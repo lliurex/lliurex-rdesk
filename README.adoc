@@ -57,7 +57,7 @@ The client RustDesk configuration is done from the manager, so that's all in cli
 
 > [NOTE]
 > To avoid unauthorized access to the client, The installation of 'lliurex-rdesk-client' preconfigures RustDesk to reject any connections.
-> This occurs only during the very first installation of the package, subsequent updates do not change the client configuration.
+> This occurs **only during the very first installation of the package**, subsequent updates do not change the client configuration.
 
 #### Run 'lliurex-rdesk-allow-access'
 
@@ -141,11 +141,11 @@ You must leave this console open to ensure that the tunnel remains active.
 
 > [NOTE]
 > LliureX RDesk Manager Console **must remain open** until the session ends.
-
+>
 > Please **do not close the terminal**. Also, **avoid using CTRL+C** to terminate the process.
-
+>
 > To terminate connection, use option '0 Exit'.
-
+>
 > To avoid risks, access to RustDesk **must be disabled** before exiting connection using 'Option 2'.
 > However, option 0 also checks the access status and allows you to disable configuration before exitting
 
@@ -161,9 +161,7 @@ lliurex-rdesk-manager-desktop [REMOTE_CLIENT_IP]
 ```
 
 > [NOTE]
-> while LliureX RDesk manager console is running, the remote client IP address is automatically available to the desktop program, so
-
-> **you can execute lliurex-rdesk-manager-desktop without arguments**
+> while LliureX RDesk manager console is running, the remote client IP address is automatically available to the desktop program, so **you can execute lliurex-rdesk-manager-desktop without arguments**
 
 The program will ask for the temporary RustDesk password:
 
@@ -181,10 +179,10 @@ This is a Wayland requisite, but the user can click a checbox to remember the se
 
 > [NOTE]
 > Remember, connections are allowed **ONLY when RustDesk window IS OPEN in the client computer**, therefore, it is essential that client user execute 'lliurex-rdesk-allow-access' **BEFORE** the manager open 'lliurex-rdesk-manager-desktop' to connect.
-
+>
 > If client RustDesk is not detected, the connection will fail immediately. 
-
+>
 > Connection will fail also if client user waits too much time to select and share display.
-
+>
 > In both cases, manager can use the "Reconnect button" (when available) or close the program and launch a new instance of 'lliurex-rdesk-mamager-desktop'.
 
