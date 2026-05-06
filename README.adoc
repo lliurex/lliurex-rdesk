@@ -99,7 +99,7 @@ The program require you to enter password for ssh connection. After login, the b
 ```
 *******************************************
 * LLIUREX RDESK MANAGER CONSOLE
-* CONNECTED AS: <USER>@1<HOST>
+* CONNECTED AS: <USER>@<HOST>
 *         FROM: <MANAGER_HOST>
 *******************************************
 
