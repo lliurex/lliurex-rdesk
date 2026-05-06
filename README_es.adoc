@@ -4,7 +4,7 @@ Translated with https://linnk.ai/tools/markdown-translator/
 :compat-mode:
 :toc:
 :icons: font
-:toc-title: Index
+:toc-title: Índice
 :toclevels: 2
 :doctype: article
 :experimental:
@@ -100,37 +100,37 @@ El programa le pedirá que introduzca la contraseña para la conexión SSH. Tras
 ```
 *******************************************
 * LLIUREX RDESK MANAGER CONSOLE
-* CONECTADO COMO: <USUARIO>@<HOST>
-*         DESDE: <HOST_MANAGER>
+* CONNECTED AS: <USER>@<HOST>
+*         FROM: <MANAGER_HOST>
 *******************************************
 
-INFORMACIÓN DEL HOST
---------------------
-NOMBRE_HOST: <HOSTNAME>
-DIRECCIÓN_IP_HOST:  <IP_ADDRESS>
+HOST INFO
+---------
+HOST_NAME: <HOSTNAME>
+HOST_IP_ADDRESS:  <IP_ADDRESS>
 
-INFORMACIÓN LLIUREX
--------------------
-VERSIÓN_HOST: ...
-TAGS_HOST: ...
+LLIUREX INFO
+------------
+HOST_VERSION: ...
+HOST_TAGS: ...
 
-INFORMACIÓN RUSTDESK
---------------------
-VERSIÓN_RUSTDESK: <VERSION>
-ESTADO_ACCESO_RUSTDESK: ?????
-CONTRASEÑA_RUSTDESK: ?????
-VENTANA_RUSTDESK_DETECTADA: N
+RUSTDESK INFO
+-------------
+RUSTDESK_VERSION: <VERSION>
+RUSTDESK_ACCESS_STATUS: ?????
+RUSTDESK_PASSWORD: ?????
+RUSTDESK_WINDOW_DETECTED: N
 
 ********************************
-* MENÚ MANAGER LLIUREX RDESK
+* LLIUREX RDESK MANAGER MENU
 ********************************
-1 Habilitar acceso (se requiere sudo)
-2 Deshabilitar acceso (se requiere sudo)
-3 Listar sesiones actuales
+1 Enable access (sudo required)
+2 Disable access (sudo required)
+3 List current sessions
 --------------------------------
-8 Actualizar información
-9 Ejecutar shell local
-0 Salir
+8 Refresh info
+9 Run local shell
+0 Exit
 --------------------------------
 
 ```
