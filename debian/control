@@ -25,7 +25,8 @@ Description: common files for LliureX-RDesk
 Package: lliurex-rdesk-client
 Architecture: all
 Depends: ${misc:Depends},
-		lliurex-rdesk-common (= ${binary:Version})
+		lliurex-rdesk-common (= ${binary:Version}),
+		open-ssh-server | ssh-server
 Description:  LliureX-RDesk files for managed devices (clients)
  LliureX-RDesk is a simple remote desktop control tool
  based on RustDesk with Wayland support.
