@@ -1,3 +1,10 @@
 #!/bin/sh
-exec lliurex-rdesk-manager console "$@"
+CMD="lliurex-rdesk-manager console"
+if [ -z "$1" ] ; then
+	printf "Enter remote username and host in the form: REMOTE_USER@REMOTE_IP: "
+	read RD_USER_HOST
+	[ "$RD_USER_HOST" ] || exit 0
+	CMD="$CMD $RD_USER_HOST"
+fi
+exec $CMD "$@"
 

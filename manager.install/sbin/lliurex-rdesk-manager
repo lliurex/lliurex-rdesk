@@ -11,7 +11,7 @@ main(){
 			exec lliurex-rdesk remote-console "$@"
 			;;
 
-		remote-console|desktop|socks-enable|socks_disable)
+		remote-console|desktop|socks-enable|socks-disable)
 			exec lliurex-rdesk "$@"
 			;;
 		*)
