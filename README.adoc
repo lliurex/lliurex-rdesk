@@ -79,7 +79,7 @@ sudo apt install lliurex-rdesk-manager
 In order to get control over a remote client, you need:
 
 - IP address of client
-- Login credentials to access client via ssh. In addidition, **administrative privileges (sudo)** are required to enable remote control in the client.
+- Login credentials to access client via ssh. In addition, **administrative privileges (sudo)** are required to enable remote control in the client.
 
 #### Run 'lliurex-rdesk-manager-console' to access the remote client.
 
@@ -175,7 +175,7 @@ image::wayland-share-screen-capture.png[]
 
 
 
-This is a Wayland requisite, but the user can click a checbox to remember the selection in future connections, but keep in mind that this setting is valid **ONLY** for current user in this computer.
+This is a Wayland requisite, but the user can click a checbox to remember the selection in future connections (keep in mind that this setting is valid **ONLY** for current user in this computer).
 
 > [NOTE]
 > Remember, connections are allowed **ONLY when RustDesk window IS OPEN in the client computer**, therefore, it is essential that client user execute 'lliurex-rdesk-allow-access' **BEFORE** the manager open 'lliurex-rdesk-manager-desktop' to connect.
@@ -184,5 +184,5 @@ This is a Wayland requisite, but the user can click a checbox to remember the se
 >
 > Connection will fail also if client user waits too much time to select and share display.
 >
-> In both cases, manager can use the "Reconnect button" (when available) or close the program and launch a new instance of 'lliurex-rdesk-mamager-desktop'.
+> In both cases, manager can use the "Reconnect button" (when available) or close the program and launch a new instance of 'lliurex-rdesk-manager-desktop'.
 
