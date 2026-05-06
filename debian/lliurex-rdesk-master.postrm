@@ -23,7 +23,7 @@ case "$1" in
 	purge|remove)
 		# update service after deletion of Drop-In files
 		systemctl daemon-reload || true
-		systemctl restar rustdesk.service || true
+		systemctl restart rustdesk.service || true
 	;;
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
     ;;

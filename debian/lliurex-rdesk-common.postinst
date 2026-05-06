@@ -22,7 +22,7 @@ case "$1" in
     configure)
 	    # update service after installation of Drop-In files
 	    systemctl daemon-reload || true
-	    systemctl restar rustdesk.service || true
+	    systemctl restart rustdesk.service || true
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
