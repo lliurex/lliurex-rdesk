@@ -163,17 +163,21 @@ lliurex-rdesk-manager-desktop [REMOTE_CLIENT_IP]
 > [NOTE]
 > while LliureX RDesk manager console is running, the remote client IP address is automatically available to the desktop program, so
 
-> **You can execute lliurex-rdesk-manager-desktop without arguments**
+> **you can execute lliurex-rdesk-manager-desktop without arguments**
 
 The program will ask for the temporary RustDesk password:
 
 image::rdesk-desktop-password-capture.png[]
 
+
+
 The **client user** will be prompted to select the display and accept sharing it with the manager.
 
 image::wayland-share-screen-capture.png[]
 
-This is a Wayland requisite, but the user can click a checbox to remember the selection in future connections, but this setting is valid **ONLY** for current user in this computer.
+
+
+This is a Wayland requisite, but the user can click a checbox to remember the selection in future connections, but keep in mind that this setting is valid **ONLY** for current user in this computer.
 
 > [NOTE]
 > Remember, connections are allowed **ONLY when RustDesk window IS OPEN in the client computer**, therefore, it is essential that client user execute 'lliurex-rdesk-allow-access' **BEFORE** the manager open 'lliurex-rdesk-manager-desktop' to connect.
