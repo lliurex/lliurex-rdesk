@@ -265,7 +265,7 @@ show_menu(){
 	get_ssh_ip
 	cat <<EOF
 *******************************************
-* RDESK CONSOLE
+* LLIUREX RDESK MANAGER CONSOLE
 EOF
 	if [ "$SSH_CLIENT_IP" ] ; then
 		echo "* CONNECTED AS: $USER@$SSH_SERVER_IP"
@@ -296,7 +296,7 @@ EOF
 	cat <<EOF
 
 ********************************
-* RDESK OPTIONS MENU
+* LLIUREX RDESK MANAGER MENU
 ********************************
 1 Enable access (sudo required)
 2 Disable access (sudo required)

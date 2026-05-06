@@ -17,7 +17,7 @@ Luis Garcia
 
 image::lliurex-rdesk.svg[height=80]
 
-Simple remote desktop control based on RustDesk with Wayland support and using just a single ssh connection to create a tunnel without any firewall configurations or hosting a server.
+Simple remote desktop control based on RustDesk with Wayland support. This tool uses just a single ssh connection to create a tunnel to provide direct access to RustDesk with no additional firewall configurations or intermediate servers requirements.
 
 ## Context
 **Wayland** is now the default display server in most of the actual linux distributions, including LliureX 25 (Based on Ubuntu 24.04).
@@ -48,33 +48,143 @@ The access to the remote client is not transparent and **can NOT be operated in 
 ## Quick start
 
 ### Client device
-Just install lliurex-rdesk-client package to get dependeincies and RustDesk configuration:
+
+#### Install lliurex-rdesk-client
 ```
 sudo apt install lliurex-rdesk-client
 ```
 The client RustDesk configuration is done from the manager, so that's all in client side.
 
 > [NOTE]
-> This occurs only during the initial installation of the package; subsequent updates do not change the client configuration.
+> To avoid unauthorized access to the client, The installation of 'lliurex-rdesk-client' preconfigures RustDesk to reject any connections.
+> This occurs only during the very first installation of the package, subsequent updates do not change the client configuration.
 
-To allow access, client user must run 'lliurex-rdesk-allow-access' from a terminal or application menu image:lliurex-rdesk-allow-access.svg[height=40]
+#### Run 'lliurex-rdesk-allow-access'
+
+image::lliurex-rdesk-allow-access.svg[height=50]
+
+To grant access to manager, **client user must run 'lliurex-rdesk-allow-access'** from a terminal or application menu.
+
+The program will open RustDesk and a notification window with the detected IP address to simplify access from manager.
+
+image::rdesk-client-capture.png[]
 
 ### Manager computer
-Install lliurex-rdesk-manager package:
+
+#### Install lliurex-rdesk-manager package:
 ```
 sudo apt install lliurex-rdesk-manager
 ```
- 
 
-## Usage
+In order to get control over a remote client, you need:
 
-### lliurex-rdesk
+- IP address of client
+- Login credentials to access client via ssh. In addidition, **administrative privileges (sudo)** are required to enable remote control in the client.
+
+#### Run 'lliurex-rdesk-manager-console' to access the remote client.
+
+image::lliurex-rdesk-manager-console.svg[height=50]
+
+You can supply the user and the host address in command line:
+
 ```
-Usage: lliurex-rdesk {enable | disable | local-console | info | popup | allow-access}
-       lliurex-rdesk {socks-enable | socks-disable} [OPTIONS]
-       lliurex-rdesk remote-console {USER@REMOTE_IP}
-       lliurex-rdesk desktop [REMOTE_IP]
-       lliurex-rdesk create-tunnel {USER@REMOTE_IP}
+lliurex-rdesk-manager-console USER@REMOTE_IP
 ```
 
+Alternatively, if no arguments are provided, you will be asked to enter data interactively.
+This utility is also available in the applications menu.
+
+The program require you to enter password for ssh connection. After login, the basic information of the host and an "unexpected" 'old-fashioned tty menu' will be shown in terminal:
+
+```
+*******************************************
+* LLIUREX RDESK MANAGER CONSOLE
+* CONNECTED AS: <USER>@<HOST>
+*         FROM: <MANAGER_HOST>
+*******************************************
+
+HOST INFO
+---------
+HOST_NAME: <HOSTNAME>
+HOST_IP_ADDRESS:  <IP_ADDRESS>
+
+LLIUREX INFO
+------------
+HOST_VERSION: ...
+HOST_TAGS: ...
+
+RUSTDESK INFO
+-------------
+RUSTDESK_VERSION: <VERSION>
+RUSTDESK_ACCESS_STATUS: ?????
+RUSTDESK_PASSWORD: ?????
+RUSTDESK_WINDOW_DETECTED: N
+
+********************************
+* LLIUREX RDESK MANAGER MENU
+********************************
+1 Enable access (sudo required)
+2 Disable access (sudo required)
+3 List current sessions
+--------------------------------
+8 Refresh info
+9 Run local shell
+0 Exit
+--------------------------------
+
+```
+
+**Press 1 to enable remote access.**
+
+This command configures RustDesk client and generates a temporary password. The password will be shown in screen.
+You must leave this console open to ensure that the tunnel remains active.
+
+> [NOTE]
+> LliureX RDesk Manager Console **must remain open** until the session ends.
+
+> Please **do not close the terminal**. Also, **avoid using CTRL+C** to terminate the process.
+
+> To terminate connection, use option '0 Exit'.
+
+> To avoid risks, access to RustDesk **must be disabled** before exiting connection using 'Option 2'.
+> However, option 0 also checks the access status and allows you to disable configuration before exitting
+
+#### Run 'lliurex-rdesk-manager-desktop'
+
+image::lliurex-rdesk-manager-desktop.svg[height=50]
+
+You can invoke the program in a separate terminal or from applications menu.
+
+```
+lliurex-rdesk-manager-desktop [REMOTE_CLIENT_IP]
+
+```
+
+> [NOTE]
+> while LliureX RDesk manager console is running, the remote client IP address is automatically available to the desktop program, so
+
+> **you can execute lliurex-rdesk-manager-desktop without arguments**
+
+The program will ask for the temporary RustDesk password:
+
+image::rdesk-desktop-password-capture.png[]
+
+
+
+The **client user** will be prompted to select the display and accept sharing it with the manager.
+
+image::wayland-share-screen-capture.png[]
+
+
+
+This is a Wayland requisite, but the user can click a checbox to remember the selection in future connections, but keep in mind that this setting is valid **ONLY** for current user in this computer.
+
+> [NOTE]
+> Remember, connections are allowed **ONLY when RustDesk window IS OPEN in the client computer**, therefore, it is essential that client user execute 'lliurex-rdesk-allow-access' **BEFORE** the manager open 'lliurex-rdesk-manager-desktop' to connect.
+
+> If client RustDesk is not detected, the connection will fail immediately. 
+
+> Connection will fail also if client user waits too much time to select and share display.
+
+> In both cases, manager can use the "Reconnect button" (when available) or close the program and launch a new instance of 'lliurex-rdesk-mamager-desktop'.
 
