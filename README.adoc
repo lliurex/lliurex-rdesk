@@ -54,7 +54,7 @@ sudo apt install lliurex-rdesk-client
 ```
 The client RustDesk configuration is done from the manager, so that's all in client side.
 
-> [!NOTE]
+> [NOTE]
 > This occurs only during the initial installation of the package; subsequent updates do not change the client configuration.
 
 To allow access, client user must run 'lliurex-rdesk-allow-access' from a terminal or application menu image:lliurex-rdesk-allow-access.svg[height=40]
