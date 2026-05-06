@@ -1,0 +1,189 @@
+# Lliurex RDesk
+Luis Garcia
+Translated with https://linnk.ai/tools/markdown-translator/
+:compat-mode:
+:toc:
+:icons: font
+:toc-title: Index
+:toclevels: 2
+:doctype: article
+:experimental:
+:icons: font
+:sectanchors:
+:sectlinks:
+:sectnums:
+:imagesdir: ./images
+
+## LliureX RDesk
+
+image::lliurex-rdesk.svg[height=80]
+
+Control remoto de escritorio simple basado en RustDesk con soporte para Wayland. Esta herramienta utiliza una única conexión SSH para crear un túnel que proporciona acceso directo a RustDesk sin necesidad de configuraciones de firewall adicionales ni servidores intermedios.
+
+## Contexto
+**Wayland** es ahora el servidor de visualización por defecto en la mayoría de las distribuciones Linux actuales, incluyendo LliureX 25 (basado en Ubuntu 24.04).
+La mayoría de las soluciones de control remoto de escritorio que funcionan en X11 fallan en Wayland, por lo tanto, para el despliegue de Lliurex 25, era esencial contar con una herramienta capaz de proporcionar soporte remoto para ordenadores que ejecutan Wayland.
+
+La DGIE proporciona a la comunidad educativa servicios de soporte de TI y equipamiento (SAI/SILO). Hasta ahora, la herramienta seleccionada para la asistencia remota de escritorio en Windows y versiones anteriores de LliureX era **AnyDesk, pero, desafortunadamente, esta aplicación no es compatible con Wayland.**
+
+Para resolver este problema, el equipo de desarrollo de LliureX ha implementado una solución de acceso remoto basada en **RustDesk**. RustDesk es una aplicación de escritorio remoto multifuncional escrita en Rust con soporte (experimental) para Wayland.
+
+## Conceptos
+En este contexto de gestión remota, utilizaremos los términos:
+
+- **'manager'** y 'equipo manager' para referirnos al técnico y al ordenador utilizado para tomar el control de un dispositivo gestionado en un centro educativo.
+- **'client'** y 'equipo cliente' para el usuario del sistema remoto gestionado y su ordenador, respectivamente.
+
+image::concepts.svg[]
+
+LliureX RDesk requiere una **conexión directa** desde el manager al equipo cliente remoto **sin necesidad de ningún servidor RustDesk intermedio**. **Utiliza una única conexión SSH para crear un túnel (proxy SOCKS)** y configurar RustDesk apropiadamente en cada extremo para usar el túnel, por lo que SOLO se necesita el puerto SSH (22 TCP). LliureX RDesk gestiona **todas las comunicaciones requeridas entre el manager y el cliente a través del túnel SSH.**
+
+El acceso al cliente remoto no es transparente y **NO se puede operar de forma totalmente desatendida**. El usuario remoto debe activar el software (RustDesk) de forma consciente para permitir y aceptar el acceso del manager. El usuario también puede terminar la conexión en cualquier momento.
+
+## Paquetes
+
+- **lliurex-rdesk-manager**: proporciona configuración y herramientas para el equipo manager.
+- **lliurex-rdesk-client**: paquete requerido para los dispositivos cliente.
+- **lliurex-rdesk-common**: elementos comunes. Es una dependencia requerida de los paquetes manager y client.
+
+## Inicio rápido
+
+### Equipo cliente
+
+#### Instalar lliurex-rdesk-client
+```
+sudo apt install lliurex-rdesk-client
+```
+La configuración del cliente RustDesk se realiza desde el manager, así que eso es todo por parte del cliente.
+
+> [NOTE]
+> Para evitar el acceso no autorizado al cliente, la instalación de 'lliurex-rdesk-client' preconfigura RustDesk para rechazar cualquier conexión.
+> Esto ocurre **solo durante la primera instalación del paquete**; las actualizaciones posteriores no cambian la configuración del cliente.
+
+#### Ejecutar 'lliurex-rdesk-allow-access'
+
+image::lliurex-rdesk-allow-access.svg[height=50]
+
+Para conceder acceso al manager, **el usuario cliente debe ejecutar 'lliurex-rdesk-allow-access'** desde una terminal o el menú de aplicaciones.
+
+El programa abrirá RustDesk y una ventana de notificación con la dirección IP detectada para simplificar el acceso desde el manager.
+
+image::rdesk-client-capture.png[]
+
+### Equipo manager
+
+#### Instalar el paquete lliurex-rdesk-manager:
+```
+sudo apt install lliurex-rdesk-manager
+```
+
+Para obtener control sobre un cliente remoto, necesita:
+
+- La dirección IP del cliente.
+- Credenciales de inicio de sesión para acceder al cliente vía SSH. Además, **se requieren privilegios administrativos (sudo)** para habilitar el control remoto en el cliente.
+
+#### Ejecutar 'lliurex-rdesk-manager-console' para acceder al cliente remoto.
+
+image::lliurex-rdesk-manager-console.svg[height=50]
+
+Puede proporcionar el usuario y la dirección del host en la línea de comandos:
+
+```
+lliurex-rdesk-manager-console USUARIO@IP_REMOTA
+```
+
+Alternativamente, si no se proporcionan argumentos, se le pedirá que introduzca los datos de forma interactiva.
+Esta utilidad también está disponible en el menú de aplicaciones.
+
+El programa le pedirá que introduzca la contraseña para la conexión SSH. Tras iniciar sesión, se mostrará en la terminal información básica del host y un 'menú tty anticuado' "inesperado":
+
+```
+*******************************************
+* LLIUREX RDESK MANAGER CONSOLE
+* CONECTADO COMO: <USUARIO>@<HOST>
+*         DESDE: <HOST_MANAGER>
+*******************************************
+
+INFORMACIÓN DEL HOST
+--------------------
+NOMBRE_HOST: <HOSTNAME>
+DIRECCIÓN_IP_HOST:  <IP_ADDRESS>
+
+INFORMACIÓN LLIUREX
+-------------------
+VERSIÓN_HOST: ...
+TAGS_HOST: ...
+
+INFORMACIÓN RUSTDESK
+--------------------
+VERSIÓN_RUSTDESK: <VERSION>
+ESTADO_ACCESO_RUSTDESK: ?????
+CONTRASEÑA_RUSTDESK: ?????
+VENTANA_RUSTDESK_DETECTADA: N
+
+********************************
+* MENÚ MANAGER LLIUREX RDESK
+********************************
+1 Habilitar acceso (se requiere sudo)
+2 Deshabilitar acceso (se requiere sudo)
+3 Listar sesiones actuales
+--------------------------------
+8 Actualizar información
+9 Ejecutar shell local
+0 Salir
+--------------------------------
+
+```
+
+**Presione 1 para habilitar el acceso remoto.**
+
+Este comando configura el cliente RustDesk y genera una contraseña temporal. La contraseña se mostrará en pantalla.
+Debe dejar esta consola abierta para asegurar que el túnel permanezca activo.
+
+> [NOTE]
+> La consola del manager de LliureX RDesk **debe permanecer abierta** hasta que finalice la sesión.
+>
+> Por favor, **no cierre la terminal**. Tampoco **evite usar CTRL+C** para terminar el proceso.
+>
+> Para terminar la conexión, use la opción '0 Salir'.
+>
+> Para evitar riesgos, el acceso a RustDesk **debe deshabilitarse** antes de salir de la conexión usando la 'Opción 2'.
+> Sin embargo, la opción 0 también verifica el estado de acceso y le permite deshabilitar la configuración antes de salir.
+
+#### Ejecutar 'lliurex-rdesk-manager-desktop'
+
+image::lliurex-rdesk-manager-desktop.svg[height=50]
+
+Puede invocar el programa en una terminal separada o desde el menú de aplicaciones.
+
+```
+lliurex-rdesk-manager-desktop [IP_CLIENTE_REMOTO]
+
+```
+
+> [NOTE]
+> Mientras la consola del manager de LliureX RDesk está en ejecución, la dirección IP del cliente remoto está automáticamente disponible para el programa de escritorio, por lo que **puede ejecutar lliurex-rdesk-manager-desktop sin argumentos**.
+
+El programa le pedirá la contraseña temporal de RustDesk:
+
+image::rdesk-desktop-password-capture.png[]
+
+
+
+El **usuario cliente** será solicitado para seleccionar la pantalla y aceptar compartirla con el manager.
+
+image::wayland-share-screen-capture.png[]
+
+
+
+Este es un requisito de Wayland, pero el usuario puede marcar una casilla para recordar la selección en futuras conexiones (tenga en cuenta que esta configuración es válida **SOLO** para el usuario actual en este ordenador).
+
+> [NOTE]
+> Recuerde, las conexiones están permitidas **SOLO cuando la ventana de RustDesk ESTÁ ABIERTA en el ordenador cliente**, por lo tanto, es esencial que el usuario cliente ejecute 'lliurex-rdesk-allow-access' **ANTES** de que el manager abra 'lliurex-rdesk-manager-desktop' para conectarse.
+>
+> Si no se detecta RustDesk en el cliente, la conexión fallará inmediatamente.
+>
+> La conexión también fallará si el usuario cliente tarda demasiado en seleccionar y compartir la pantalla.
+>
+> En ambos casos, el manager puede usar el botón "Reconectar" (cuando esté disponible) o cerrar el programa y lanzar una nueva instancia de 'lliurex-rdesk-manager-desktop'.
+
