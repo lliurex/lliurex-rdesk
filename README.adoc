@@ -55,16 +55,78 @@ sudo apt install lliurex-rdesk-client
 The client RustDesk configuration is done from the manager, so that's all in client side.
 
 > [NOTE]
-> This occurs only during the initial installation of the package; subsequent updates do not change the client configuration.
+> This occurs only during the very first installation of the package, subsequent updates do not change the client configuration.
 
 To allow access, client user must run 'lliurex-rdesk-allow-access' from a terminal or application menu image:lliurex-rdesk-allow-access.svg[height=40]
 
 ### Manager computer
-Install lliurex-rdesk-manager package:
+
+#### Install lliurex-rdesk-manager package:
 ```
 sudo apt install lliurex-rdesk-manager
 ```
- 
+
+In order to get control over a remote client, you need:
+
+- IP address of client
+- Login credentials to access client via ssh. In addidition, **administrative privileges (sudo)** are required to enable remote control in the client.
+
+#### Run 'lliurex-rdesk-manager-console' to access the remote client. You can supply the user and the host address in command line:
+
+```
+lliurex-rdesk-manager-console USER@REMOTE_IP
+```
+
+If no arguments are provided, you will be asked to enter data nteractively.
+This utility is also available in the applications menu. image:lliurex-rdesk-manager-console.svg[height=40]
+
+The program require you to enter password for ssh connection. After login, the basic information of the host and an old-fashioned tty menu will be shown in terminal:
+
+```
+*******************************************
+* RDESK CONSOLE
+* CONNECTED AS: <USER>@1<HOST>
+*         FROM: <MANAGER_HOST>
+*******************************************
+
+HOST INFO
+---------
+HOST_NAME: <HOSTNAME>
+HOST_IP_ADDRESS:  <IP_ADDRESS>
+
+LLIUREX INFO
+------------
+HOST_VERSION: ...
+HOST_TAGS: ...
+
+RUSTDESK INFO
+-------------
+RUSTDESK_VERSION: <VERSION>
+RUSTDESK_ACCESS_STATUS: ?????
+RUSTDESK_PASSWORD: ?????
+RUSTDESK_WINDOW_DETECTED: N
+
+********************************
+* RDESK OPTIONS MENU
+********************************
+1 Enable access (sudo required)
+2 Disable access (sudo required)
+3 List current sessions
+--------------------------------
+8 Refresh info
+9 Run local shell
+0 Exit
+--------------------------------
+
+```
+
+#### Press 1 to enable remote access.
+
+This command configures RustDesk client and generates a temporary password. The password will be shown in screen.
+
+#### Run 'lliurex-rdesk-manager-desktop' in a separate terminal or from applications menú.
+
+image::lliurex-rdesk-manager-desktop.svg[height=40]
 
 ## Usage
 
