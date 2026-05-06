@@ -12,7 +12,7 @@ Architecture: all
 Pre-Depends: rustdesk (>= 1.4.6)
 Depends: ${misc:Depends},
 		procps,
-		openssh-client || ssh-client,
+		openssh-client | ssh-client,
 		lsb-release,
 		iproute2,
 		systemd,
