@@ -50,7 +50,7 @@ main(){
 			a=""
 			TIMEOUT="1.5"
 			n=0
-			show_menu
+			show_menu 0
 			while [ "$a" != "0" ] ; do
 				if [ $n -eq 1 ] ; then
 					CHR=" "
@@ -263,6 +263,7 @@ pause_menu(){
 show_menu(){
 	clear
 	get_ssh_ip
+	[ -z "$1" ] || echo -e "LliureX has you...\n"
 	cat <<EOF
 *******************************************
 * LLIUREX RDESK MANAGER CONSOLE
@@ -625,7 +626,7 @@ launch_socks_tunnel(){
 		REMOTE_CMD="sudo --preserve-env=SSH_CONNECTION $CMD_BASE enable"
 	fi
 
-	ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} "$REMOTE_CMD 2>/dev/null || echo '$CMD_BASE is NOT INSTALLLED in remote host'"
+	ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -D $SOCKS_PORT ${REMOTE_USER}@${REMOTE_IP} "$REMOTE_CMD || echo '$CMD_BASE is NOT INSTALLLED in remote host'"
 }
 
 launch_sshuttle_tunnel(){
