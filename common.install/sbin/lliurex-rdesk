@@ -215,6 +215,7 @@ main(){
 			if process_check "$RUSTDESK_PID" ; then
 			       die "Allow-access already running"
 			fi
+			reset_share_settings
 			runtime_close
 			$0 popup &
 			runtime_write "ALLOW_ACCESS" "$$"
