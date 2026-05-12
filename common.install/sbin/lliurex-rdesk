@@ -98,7 +98,7 @@ main(){
 						;;
 					9)
 						echo "Use 'exit' command to return to RDesk console"
-						/bin/bash
+						/bin/bash --rcfile /usr/share/lliurex-rdesk-common/rdesk.bashrc
 						# bash --rcfile /tmp/bashrc 
 						;;
 					0)
