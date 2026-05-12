@@ -9,7 +9,7 @@ main(){
 			shift
 			exec lliurex-rdesk local-console "$@"
 			;;
-		local-console|enable|disable|info|popup|allow-access)
+		local-console|enable|disable|info|popup|allow-access|reset-share-settings)
 			exec lliurex-rdesk "$@"
 			;;
 		*)
@@ -21,7 +21,7 @@ main(){
 }
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | local-console|console | info | popup | allow-access}"
+        die "Usage" "$(basename "$0") {enable | disable | local-console|console | info | popup | allow-access | reset-share-settings}"
 }
 
 die(){

@@ -221,6 +221,9 @@ main(){
 		        rustdesk
 			runtime_close
 			;;
+		reset-share-settings)
+			reset_share_settings
+			;;
 		*)
 			usage
 			;;
@@ -231,7 +234,7 @@ main(){
 
 
 usage(){
-        die "Usage" "$(basename "$0") {enable | disable | local-console | info | popup | allow-access}" \
+        die "Usage" "$(basename "$0") {enable | disable | local-console | info | popup | allow-access | reset-share-settings}" \
             "       $(basename "$0") {socks-enable | socks-disable} [OPTIONS]" \
             "       $(basename "$0") remote-console {USER@REMOTE_IP}" \
             "       $(basename "$0") desktop [REMOTE_IP]" \
@@ -348,6 +351,12 @@ RUSTDESK_ACCESS_STATUS: $RD_STATUS
 RUSTDESK_PASSWORD: $RD_PASSWORD
 RUSTDESK_WINDOW_DETECTED: $RD_WINDOW
 EOF
+}
+
+reset_share_settings() {
+	# clear and forget wayland screen selection choice
+	for x in $(flatpak permissions | awk '{print $2}'); do flatpak permission-remove screencast $x; done
+	# rm -f ~/.local/share/flatpak/db/screencast
 }
 
 list_rustdesk_procs(){
