@@ -356,8 +356,21 @@ EOF
 
 reset_share_settings() {
 	# clear and forget wayland screen selection choice
-	for x in $(flatpak permissions | awk '{print $2}'); do flatpak permission-remove screencast $x; done
+	# new aproach to remove settings ONLY for RustDesk
+	# for x in $(flatpak permissions | awk '{print $2}'); do flatpak permission-remove screencast $x; done
 	# rm -f ~/.local/share/flatpak/db/screencast
+	#
+	RD_CONFIG="$HOME/.config/rustdesk/RustDesk_local.toml"
+	if [ -e "$RD_CONFIG" ] ; then
+		RD_TOKEN="$(sed -n -e "/^\[options\]/,/^\[/{s/^wayland-restore-token[[:space:]]*=[[:space:]]*'\([^']*\)'/\1/p}" "$RD_CONFIG")"
+		if [ "$RD_TOKEN" ] ; then
+			flatpak permission-remove screencast "$RD_TOKEN"
+			echo "Removed RustDesk screencast settings"
+			return 0
+		fi
+	fi
+	echo "Nothing to do"
+	return 0
 }
 
 list_rustdesk_procs(){
